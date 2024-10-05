@@ -1,1 +1,1 @@
-# Spring-Boot-from-Basics-to-Advanced
+# Spring Boot from Basics to Advanced
