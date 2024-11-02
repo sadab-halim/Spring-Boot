@@ -116,3 +116,143 @@ Run this command: `mvn spring-boot:run -Pproduction`
 ```
 username: prodUsername password: prodPassword
 ```
+
+---------
+
+Using @Profile annotation, we can tell Spring Boot to create bean only when particular profile is set.
+#### Example
+```java
+@Component
+@Profile("prod")
+public class MySQLConnection {
+    @Value("${username}")
+    String username;
+    
+    @Value("${password}")
+    String password;
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("MySQL username: " + username + " password: " + password);
+    }
+}
+```
+
+```java
+@Component
+@Profile("dev")
+public class MySQLConnection {
+    @Value("${username}")
+    String username;
+    
+    @Value("${password}")
+    String password;
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("MySQL username: " + username + " password: " + password);
+    }
+}
+```
+
+#### application.properties
+```
+username=defaultUsername
+password=defaultPassword
+spring.profiles.active=qa
+```
+
+#### application-dev.properties
+```
+username=devUsername
+password=devPassword
+```
+
+#### application-qa.properties
+```
+username=qaUsername
+password=qaPassword
+```
+
+#### application-prod.properties
+```
+username=prodUsername
+password=prodPassword
+```
+
+Run this command: `mvn spring-boot:run -Dspring-boot.run.profiles=prod` <br>
+
+#### Console
+```
+username: prodUsername password: prodPassword
+```
+
+### We can also set multiple profiles at a time
+#### Example
+```java
+@Component
+@Profile("prod")
+public class MySQLConnection {
+    @Value("${username}")
+    String username;
+    
+    @Value("${password}")
+    String password;
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("MySQL username: " + username + " password: " + password);
+    }
+}
+```
+
+```java
+@Component
+@Profile("dev")
+public class MySQLConnection {
+    @Value("${username}")
+    String username;
+    
+    @Value("${password}")
+    String password;
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("MySQL username: " + username + " password: " + password);
+    }
+}
+```
+
+It will always consider the last one (by default)
+
+#### application.properties
+```
+username=defaultUsername
+password=defaultPassword
+spring.profiles.active=prod,qa
+```
+
+#### application-dev.properties
+```
+username=devUsername
+password=devPassword
+```
+
+#### application-qa.properties
+```
+username=qaUsername
+password=qaPassword
+```
+
+#### application-prod.properties
+```
+username=prodUsername
+password=prodPassword
+```
+
+#### Console
+```
+MySql username: qaUsername password: qaPassword
+NoSql username: qaUsername password: qaPassword
+```
+
