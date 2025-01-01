@@ -65,7 +65,7 @@ And for that:
     }
    ```
 
-### `@Transactional` annotation at Method Level
+### `@Transactional` at Method Level
 - Transaction is applied to a particular method only.
 - ```java
   @Component
