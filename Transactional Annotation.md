@@ -418,7 +418,7 @@ Transaction A reads the un-committed data of other transaction and if other tran
 | T3 | Read Row <br> ID: 123 (Got Status = Booked) |                                              | ID: 123 <br> Status: Booked (Not Committed by Transaction B yet) |
 | T4 | | Rollback                                     | TD: 123 <br> Status: Free (Uncommitted change of Transaction B got Rolled Back) |
 
-### Non-Repeatable Read Possible
+### Non-Repeatable Read Problem
 If suppose Transaction A, reads the same row several times and there is a chance that it get different value, then its known as Non-Repeatable Read Problem.
 
 | Time | Transaction A                        | DB                        |
@@ -429,5 +429,34 @@ If suppose Transaction A, reads the same row several times and there is a chance
 | T4   | Read Row ID: 1 (read status: Booked) | ID: 1 <br> Status: Free   |
 | T5   | COMMIT | |
 
-### Phantom Read Possible
-If suppose Transaction A, executed same query several time 
+### Phantom Read Problem
+If suppose Transaction A, executed same query several times but there is a change that rows returned are different. Then, its known as **Phantom Read Problem**.
+
+| Time | Transaction A                                                        | DB                                                                      |
+|------|----------------------------------------------------------------------|-------------------------------------------------------------------------|
+| T1   | BEGIN_TRANSACTION                                                    | ID: 1, Status: Free <br> ID: 3, Status: Booked                          |
+| T2   | Read Row where ID > 0 and ID < 5 (reads 2 rows ID: 1 and ID: 3)      | ID: 1, Status: Free <br> ID: 3, Status: Booked                          |                       |
+| T3   |                                                                      | ID: 1, Status: Free <br> ID: 2, Status: Free <br> ID: 3, Status: Booked |
+| T4   | Read Row where ID > 0 and ID < 5 (reads 3 rows, ID:1, ID:2 and ID:3) | ID: 1, Status: Free <br> ID: 2, Status: Free <br> ID: 3, Status: Booked |                                                |
+| T5   | COMMIT                                                               |                                                                         |
+
+### DB Locking Types
+Locking makes sure that, no other transaction updates the locked rows.
+
+| Lock Type | Another Shared Lock | Another Exclusive Lock |
+|-----------|---------------------|------------------------|
+| Have Shared Lock | Yes | No |
+| Have Exclusive Lock | No | No |
+
+- Shared Lock (S) also known as **READ LOCK**
+- Exclusive Lock(X) also known as **WRITE LOCK**
+
+## Isolation Level and Locking Strategy
+
+| Isolation Level | Locking Strategy |
+|-----------------|------------------|
+| Read Uncommitted | **Read:** No Lock acquired <br> **Write:** No Lock acquired |
+| Read Committed | **Read:** Shared lock acquired and released as soon as read is done. <br> **Write:** Exclusive lock acquired and kept till the end of transaction. |
+| Repeatable Read | **Read:** Shared lock acquired and released only at the end of the transaction. <br> **Write:** Exclusive lock acquired and released only at the end of the transaction. |
+| Serializable | Same as repeatable read locking strategy + apply range lock and lock is release only at the end of the transaction. |
+
