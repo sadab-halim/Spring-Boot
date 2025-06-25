@@ -1756,11 +1756,11 @@ While Spring Security provides extensive features, performance can be a concern 
         return (web) -> web.ignoring().requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/actuator/health");
    }
    ```
-  - **Lazy Initialization**: Spring Boot and Spring Security are generally well-optimized. Avoid unnecessary eager initialization of security-related beans if they are not always needed.
-  - **Caching**:
-    - `UserDetailsService` **Caching**: If `loadUserByUsername` involves a database call, consider caching user details, especially if roles/permissions don't change frequently. Spring Security provides `UserCache` and integrates with Spring's caching mechanism.
-    - **Permission Evaluator Caching**: For custom `PermissionEvaluator` implementations, cache results if the permission checks are computationally expensive and inputs are repetitive.
-  - **Token Validation (JWT)**: While stateless JWTs avoid session lookups, validating signatures and parsing claims for every request can add overhead. Use efficient JWT libraries (like Nimbus JOSE+JWT, which Spring Security uses) and consider caching decoded tokens for a very short duration if applicable (though this can reintroduce state).
-  - **Authentication Provider Optimization**: If you have multiple `AuthenticationProvider` instances, ensure they are ordered efficiently or that the `AuthenticationManager` can quickly determine which provider can handle a given `Authentication` type.
-  - **Database Queries**: Optimize your `UserDetailsService` implementation to efficiently fetch user details and authorities from the database. Use proper indexing.
+- **Lazy Initialization**: Spring Boot and Spring Security are generally well-optimized. Avoid unnecessary eager initialization of security-related beans if they are not always needed.
+- **Caching**:
+  - `UserDetailsService` **Caching**: If `loadUserByUsername` involves a database call, consider caching user details, especially if roles/permissions don't change frequently. Spring Security provides `UserCache` and integrates with Spring's caching mechanism.
+  - **Permission Evaluator Caching**: For custom `PermissionEvaluator` implementations, cache results if the permission checks are computationally expensive and inputs are repetitive.
+- **Token Validation (JWT)**: While stateless JWTs avoid session lookups, validating signatures and parsing claims for every request can add overhead. Use efficient JWT libraries (like Nimbus JOSE+JWT, which Spring Security uses) and consider caching decoded tokens for a very short duration if applicable (though this can reintroduce state).
+- **Authentication Provider Optimization**: If you have multiple `AuthenticationProvider` instances, ensure they are ordered efficiently or that the `AuthenticationManager` can quickly determine which provider can handle a given `Authentication` type.
+- **Database Queries**: Optimize your `UserDetailsService` implementation to efficiently fetch user details and authorities from the database. Use proper indexing.
 
