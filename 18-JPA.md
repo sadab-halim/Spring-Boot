@@ -8,12 +8,12 @@ Before diving into the specifics, let's understand where Spring Data JPA fits in
 - **Spring Data JPA**: This is a module within the Spring Data project that builds on top of JPA. It simplifies the implementation of JPA-based data access layers by providing a high-level abstraction. Instead of writing concrete implementations for common CRUD (Create, Read, Update, Delete) operations, you simply define repository interfaces, and Spring Data JPA automatically generates the necessary implementation at runtime using a JPA provider (typically Hibernate).
 
 #### Reasons for preferring JPA in Modern Enterprise Applications:
-- **Reduced Boilerplate Code**: Spring Data JPA drastically reduces the amount of code you need to write for data access. Defining simple interfaces and method names is often enough for common operations.
-- **Increased Productivity**: Developers can focus on business logic rather than tedious SQL and JDBC boilerplate.
-- **Object-Oriented Approach**: JPA allows you to work with objects directly, which aligns better with object-oriented programming principles and improves code readability and maintainability.
-- **Database Agnosticism**: While you still use a relational database, JPA abstracts away many database-specific details. You can often switch databases with minimal code changes.
-- **Built-in Features**: JPA and its providers offer features like caching, transaction management, optimistic locking, and schema generation, which would be complex to implement from scratch with JDBC.
-- **Standardization**: As a specification, JPA provides a standardized way to interact with databases in Java, making it easier for developers to move between projects that use different JPA providers
+- Reduced Boilerplate Code
+- Increased Productivity
+- Object-Oriented Approach
+- Database Agnosticism
+- Built-in Features
+- Standardization
 
 ## Complete Setup Process
 ### 1. Dependencies
@@ -21,7 +21,70 @@ To get started with Spring Boot and JPA, you need to add the appropriate depende
 
 #### Maven
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version> <relativePath/> </parent>
+    <groupId>com.example</groupId>
+    <artifactId>spring-boot-jpa-demo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>spring-boot-jpa-demo</name>
+    <description>Demo project for Spring Boot and JPA</description>
 
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version> <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
 ```
 
 #### Gradle
@@ -30,7 +93,7 @@ To get started with Spring Boot and JPA, you need to add the appropriate depende
 ```
 
 #### `application.properties` **(or ** `application.yml` **) for database configuration:**
-```
+```properties
 # DataSource configuration for MySQL
 spring.datasource.url=jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
@@ -51,7 +114,6 @@ spring.jpa.properties.hibernate.format_sql=true
 
 ### 2. Entity Creation
 An entity is a lightweight, persistent domain object. It represents a table in your database, and each instance of the entity corresponds to a row in that table.
-
 ```java
 package com.example.springbootjpademo.entity;
 
@@ -84,7 +146,6 @@ public class User {
 
 ### 3. Repository Interfaces
 Spring Data JPA provides a powerful abstraction for data access using repository interfaces. You extend one of the provided interfaces (e.g., `JpaRepository`, `CrudRepository`, `PagingAndSortingRepository`), and Spring Data JPA automatically generates the implementation
-
 ```java
 package com.example.springbootjpademo.repository;
 
@@ -132,7 +193,7 @@ An entity instance transitions through various states during its lifecycle, mana
     ```
    
 ### Persistence Context
-The persistence context is a first-level cache where managed entity instances reside. It's essentially a synchronization mechanism between the Java objects in your application and the corresponding rows in the database
+The persistence context is a **first-level cache** where managed entity instances reside. It's essentially a synchronization mechanism between the Java objects in your application and the corresponding rows in the database
 - **Role of EntityManager**: The EntityManager is the primary interface for interacting with the persistence context. It provides methods like `persist()`, `find()`, `merge()`, `remove()`, and `flush()` to manage entities within the context.
 - **Transaction-Scoped Persistence Context (Default in Spring Boot)**:  In a typical Spring Boot application with `@Transactional` services, a persistence context is automatically created when a transaction begins and is closed when the transaction commits or rolls back. All operations within that transaction operate on the same persistence context. This ensures that:
   - **Identity Map**: For any given database identity (primary key), there will be at most one managed entity instance in the persistence context. If you fetch the same entity multiple times within a transaction, you'll get the same object reference.
