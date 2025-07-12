@@ -647,18 +647,21 @@ public class NotificationController {
 
 --- 
 
-Scope and Profile Annotations
+## Scope and Profile Annotations
 These annotations allow you to control the lifecycle scope of beans and activate beans conditionally based on the environment.
-@Scope
+
+### `@Scope`
 Defines the scope of a Spring bean. By default, beans are singletons.
-Common Scopes:
- * singleton (Default): A single instance of the bean is created per Spring IoC container.
- * prototype: A new instance of the bean is created every time it is requested.
- * request: A new instance of the bean is created for each HTTP request (only in web-aware applications).
- * session: A new instance of the bean is created for each HTTP session (only in web-aware applications).
- * application: A single instance of the bean is created for the entire ServletContext (only in web-aware applications).
- * websocket: A single instance of the bean is created for the life of a WebSocket session.
-Real-world Example:
+#### Common Scopes:
+- `singleton` **(Default)**: A single instance of the bean is created per Spring IoC container.
+- `prototype`: A new instance of the bean is created every time it is requested.
+- `request`: A new instance of the bean is created for each HTTP request (only in web-aware applications).
+- `session`: A new instance of the bean is created for each HTTP session (only in web-aware applications).
+- `application`: A single instance of the bean is created for the entire ServletContext (only in web-aware applications).
+- `websocket`: A single instance of the bean is created for the life of a WebSocket session.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/component/PrototypeBean.java
 package com.example.myapp.component;
 
@@ -680,7 +683,9 @@ public class PrototypeBean {
         return instanceId;
     }
 }
+```
 
+```java
 // src/main/java/com/example/myapp/controller/ScopeController.java
 package com.example.myapp.controller;
 
@@ -704,14 +709,19 @@ public class ScopeController {
         return "Prototype instances: " + bean1.getInstanceId() + " and " + bean2.getInstanceId();
     }
 }
+```
 
-Common Use Case:
- * prototype: For stateful beans that should not be shared across multiple clients/threads, or for objects that need to be frequently reset.
- * request/session: For web-specific data that is tied to the lifecycle of an HTTP request or session.
-Best Practices: Be cautious with prototype scope in combination with singleton beans, as a singleton will only get one instance of a prototype bean (the one injected at its creation). Use ObjectFactory or ApplicationContext.getBean() for new instances.
-@Profile
-Allows you to register beans conditionally based on the active Spring profiles. Profiles are typically set via spring.profiles.active property.
-Real-world Example:
+#### Common Use Case:
+- `prototype`: For stateful beans that should not be shared across multiple clients/threads, or for objects that need to be frequently reset.
+- `request`/`session`: For web-specific data that is tied to the lifecycle of an HTTP request or session.
+
+**Best Practices**: Be cautious with `prototype` scope in combination with singleton beans, as a singleton will only get one instance of a prototype bean (the one injected at its creation). Use `ObjectFactory` or `ApplicationContext.getBean()` for new instances.
+
+### `@Profile`
+Allows you to register beans conditionally based on the active Spring profiles. Profiles are typically set via `spring.profiles.active` property.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/service/EmailService.java (Interface remains the same)
 // ...
 
@@ -730,7 +740,9 @@ public class DevEmailService implements EmailService {
         System.out.println("DEV: Sending email to " + to + ": " + subject);
     }
 }
+```
 
+```java
 // src/main/java/com/example/myapp/service/impl/ProdEmailService.java
 package com.example.myapp.service.impl;
 
@@ -746,20 +758,26 @@ public class ProdEmailService implements EmailService {
         System.out.println("PROD: Sending email to " + to + ": " + subject);
     }
 }
+```
 
-To activate: java -jar myapp.jar --spring.profiles.active=dev or set spring.profiles.active=prod in application.properties.
-Common Use Case: Providing different configurations or bean implementations for various environments (development, testing, production).
-Best Practices: Use meaningful profile names. Avoid creating too many fine-grained profiles, as it can lead to complexity.
-Conditional Annotations (@Conditional, @ConditionalOnProperty, @ConditionalOnClass, @ConditionalOnMissingBean, etc.)
+To activate: `java -jar myapp.jar --spring.profiles.active=dev` or `set spring.profiles.active=prod` in application.properties.
+
+**Common Use Case**: Providing different configurations or bean implementations for various environments (development, testing, production).
+
+**Best Practices**: Use meaningful profile names. Avoid creating too many fine-grained profiles, as it can lead to complexity.
+
+**Conditional Annotations (**`@Conditional`, `@ConditionalOnProperty`, `@ConditionalOnClass`, `@ConditionalOnMissingBean`, **etc.)**
 These annotations provide powerful mechanisms for conditional bean registration, allowing beans to be included in the application context only if certain conditions are met. They are heavily used by Spring Boot's auto-configuration.
- * @Conditional: The most generic one. Takes a Condition implementation that programmatically determines if a bean should be registered.
- * @ConditionalOnProperty: Registers a bean only if a specific Spring environment property exists and optionally has a certain value.
- * @ConditionalOnClass: Registers a bean only if the specified classes are present on the classpath.
- * @ConditionalOnMissingBean: Registers a bean only if a bean of the specified type (or name) is not already present in the application context. This is crucial for auto-configuration, allowing users to override default beans.
- * @ConditionalOnBean: Registers a bean only if a bean of the specified type (or name) is present in the application context.
- * @ConditionalOnMissingClass: Registers a bean only if the specified classes are not present on the classpath.
- * @ConditionalOnWebApplication / @ConditionalOnNotWebApplication: Registers a bean based on whether the application is a web application or not.
-Real-world Example (@ConditionalOnProperty):
+- `@Conditional`: The most generic one. Takes a `Condition` implementation that programmatically determines if a bean should be registered.
+- `@ConditionalOnProperty`: Registers a bean only if a specific Spring environment property exists and optionally has a certain value.
+- `@ConditionalOnClass`: Registers a bean only if the specified classes are present on the classpath.
+- `@ConditionalOnMissingBean`: Registers a bean only if a bean of the specified type (or name) is not already present in the application context. This is crucial for auto-configuration, allowing users to override default beans.
+- `@ConditionalOnBean`: Registers a bean only if a bean of the specified type (or name) is present in the application context.
+- `@ConditionalOnMissingClass`: Registers a bean only if the specified classes are not present on the classpath.
+- `@ConditionalOnWebApplication` / `@ConditionalOnNotWebApplication`: Registers a bean based on whether the application is a web application or not.
+
+#### Real-world Example (`@ConditionalOnProperty`):
+```java
 // src/main/java/com/example/myapp/service/FeatureToggleService.java
 package com.example.myapp.service;
 
@@ -773,9 +791,12 @@ public class FeatureToggleService {
         System.out.println("Executing the new feature!");
     }
 }
+```
 
-To enable: features.new-feature.enabled=true in application.properties.
-Real-world Example (@ConditionalOnMissingBean):
+To enable: `features.new-feature.enabled=true` in `application.properties`.
+
+#### Real-world Example (`@ConditionalOnMissingBean`):
+```java
 // src/main/java/com/example/myapp/config/DefaultDataSourceConfig.java
 package com.example.myapp.config;
 
@@ -796,35 +817,43 @@ public class DefaultDataSourceConfig {
         return null; // Placeholder
     }
 }
+```
 
-Common Use Case: Building flexible and extensible applications, especially for libraries and auto-configurations. Allows features to be enabled/disabled based on configuration or classpath presence.
-Best Practices: Understand the order of evaluation for multiple conditional annotations on a single class. For complex custom conditions, implement the Condition interface.
-🌐 Web & Controller Annotations
+**Common Use Case**: Building flexible and extensible applications, especially for libraries and auto-configurations. Allows features to be enabled/disabled based on configuration or classpath presence.
+
+**Best Practices**: Understand the order of evaluation for multiple conditional annotations on a single class. For complex custom conditions, implement the `Condition` interface.
+
+## Web & Controller Annotations
 These annotations are essential for building RESTful APIs and traditional web applications with Spring MVC.
-Request Mapping Annotations
+
+### Request Mapping Annotations
 These map incoming HTTP requests to handler methods in Spring controllers.
- * @RequestMapping: The original and most versatile mapping annotation. Can be used at the class level (base path) and method level (specific path and HTTP method).
+- `@RequestMapping`: The original and most versatile mapping annotation. Can be used at the class level (base path) and method level (specific path and HTTP method).
+   ```java
    @Controller
-@RequestMapping("/users") // Base path for all methods in this controller
-public class UserController {
+   @RequestMapping("/users") // Base path for all methods in this controller
+   public class UserController {
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getUserById(@PathVariable Long id) {
-        return "User with ID: " + id;
-    }
+      @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+      public String getUserById(@PathVariable Long id) {
+         return "User with ID: " + id;
+      }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createUser(@RequestBody User user) {
-        return "User created: " + user.getName();
-    }
-}
+      @RequestMapping(value = "/create", method = RequestMethod.POST)
+      public String createUser(@RequestBody User user) {
+         return "User created: " + user.getName();
+      }
+   }
+  ```
 
- * @GetMapping: Shortcut for @RequestMapping(method = RequestMethod.GET).
- * @PostMapping: Shortcut for @RequestMapping(method = RequestMethod.POST).
- * @PutMapping: Shortcut for @RequestMapping(method = RequestMethod.PUT).
- * @DeleteMapping: Shortcut for @RequestMapping(method = RequestMethod.DELETE).
- * @PatchMapping: Shortcut for @RequestMapping(method = RequestMethod.PATCH).
-Real-world Example (using specific HTTP method annotations):
+- `@GetMapping`: Shortcut for `@RequestMapping(method = RequestMethod.GET)`.
+- `@PostMapping`: Shortcut for `@RequestMapping(method = RequestMethod.POST)`.
+- `@PutMapping`: Shortcut for `@RequestMapping(method = RequestMethod.PUT)`.
+- `@DeleteMapping`: Shortcut for `@RequestMapping(method = RequestMethod.DELETE)`.
+- `@PatchMapping`: Shortcut for `@RequestMapping(method = RequestMethod.PATCH)`.
+
+#### Real-world Example (using specific HTTP method annotations):
+```java
 // src/main/java/com/example/myapp/controller/ProductRestController.java
 package com.example.myapp.controller;
 
@@ -884,85 +913,106 @@ public class ProductRestController {
         products.removeIf(p -> p.getId().equals(id));
     }
 }
+```
 
-Common Use Case: Defining REST endpoints for CRUD operations or any web-exposed functionality.
-Best Practices: Use the specific HTTP method annotations (@GetMapping, etc.) for clarity. Use @RequestMapping when you need to specify multiple HTTP methods or more complex request matching criteria (e.g., consumes, produces).
-Parameter and Body Handling Annotations
+**Common Use Cases**: Defining REST endpoints for CRUD operations or any web-exposed functionality.
+
+**Best Practices**: Use the specific HTTP method annotations (`@GetMapping`, etc.) for clarity. Use `@RequestMapping` when you need to specify multiple HTTP methods or more complex request matching criteria (e.g., `consumes`, `produces`).
+
+### Parameter and Body Handling Annotations
 These annotations bind request data to method parameters.
- * @RequestBody: Binds the HTTP request body to a method parameter. Typically used with POST, PUT, or PATCH requests to deserialize JSON/XML into Java objects.
+- `@RequestBody`: Binds the HTTP request body to a method parameter. Typically used with `POST`, `PUT`, or `PATCH` requests to deserialize JSON/XML into Java objects.
+   ```java
    @PostMapping
-public Product createProduct(@RequestBody Product product) { ... }
-
- * @ResponseBody: Indicates that the return value of a method should be bound directly to the web response body. With @RestController, it's implicitly applied to all methods.
+   public Product createProduct(@RequestBody Product product) { ... }
+   ```
+- `@ResponseBody`: Indicates that the return value of a method should be bound directly to the web response body. With `@RestController`, it's implicitly applied to all methods.
+   ```java
    @GetMapping("/{id}")
-@ResponseBody // Not needed with @RestController
-public Product getProductById(@PathVariable Long id) { ... }
-
- * @RequestParam: Binds a web request parameter (from the URL query string) to a method parameter.
+   @ResponseBody // Not needed with @RestController
+   public Product getProductById(@PathVariable Long id) { ... }
+   ```
+- `@RequestParam`: Binds a web request parameter (from the URL query string) to a method parameter.
+   ```java   
    @GetMapping("/search")
-public List<Product> searchProducts(@RequestParam(required = false) String name,
+   public List<Product> searchProducts(@RequestParam(required = false) String name,
                                    @RequestParam(defaultValue = "0") int minPrice) {
     // ...
-}
+   }
+  ```
 
- * @PathVariable: Binds a URI template variable (from the path itself) to a method parameter.
+- `@PathVariable`: Binds a URI template variable (from the path itself) to a method parameter.
+   ```java
    @GetMapping("/{id}")
-public Product getProductById(@PathVariable("id") Long productId) { ... }
-
- * @RequestHeader: Binds a specific HTTP header to a method parameter.
+   public Product getProductById(@PathVariable("id") Long productId) { ... }
+   ```
+- `@RequestHeader`: Binds a specific HTTP header to a method parameter.
+   ```java
    @GetMapping("/info")
-public String getInfo(@RequestHeader("User-Agent") String userAgent) { ... }
-
- * @CookieValue: Binds an HTTP cookie to a method parameter.
+   public String getInfo(@RequestHeader("User-Agent") String userAgent) { ... }
+   ```
+- `@CookieValue`: Binds an HTTP cookie to a method parameter.
+   ```java
    @GetMapping("/cookie-test")
-public String getCookie(@CookieValue(value = "myCookie", defaultValue = "default") String cookieValue) { ... }
-
- * @ModelAttribute: Binds a method parameter or method return value to a named model attribute, exposed to a web view. Often used in traditional MVC. Can also be used to bind request parameters to an object.
+   public String getCookie(@CookieValue(value = "myCookie", defaultValue = "default") String cookieValue) { ... }
+   ```
+- `@ModelAttribute`: Binds a method parameter or method return value to a named model attribute, exposed to a web view. Often used in traditional MVC. Can also be used to bind request parameters to an object.
+   ```java
    // For form binding
-@PostMapping("/submit-form")
-public String submitForm(@ModelAttribute("myForm") MyFormData formData, Model model) { ... }
+   @PostMapping("/submit-form")
+   public String submitForm(@ModelAttribute("myForm") MyFormData formData, Model model) { ... }
 
-// For adding data to model
-@ModelAttribute("productTypes")
-public List<String> populateProductTypes() {
-    return Arrays.asList("Electronics", "Books");
-}
+   // For adding data to model
+   @ModelAttribute("productTypes")
+   public List<String> populateProductTypes() {
+     return Arrays.asList("Electronics", "Books");
+   }
+  ```
 
-Common Use Cases: Handling diverse types of incoming data for web endpoints.
-Best Practices: Use specific annotations (@RequestParam, @PathVariable, @RequestBody) for clarity and type safety.
-Response and Exception Handling Annotations
+**Common Use Cases**: Handling diverse types of incoming data for web endpoints.
+
+**Best Practices**: Use specific annotations (`@RequestParam`, `@PathVariable`, `@RequestBody`) for clarity and type safety.
+
+### Response and Exception Handling Annotations
 These annotations help control the HTTP response status and handle exceptions.
- * @ResponseStatus: Marks a method or exception class with a specific HTTP status code that should be returned.
+- `@ResponseStatus`: Marks a method or exception class with a specific HTTP status code that should be returned.
+   ```java
    @PostMapping
-@ResponseStatus(HttpStatus.CREATED) // Returns 201 Created on success
-public Product createProduct(@RequestBody Product product) { ... }
-
-@ResponseStatus(HttpStatus.NOT_FOUND) // Can also be on custom exception class
-public class ProductNotFoundException extends RuntimeException { ... }
-
- * @ExceptionHandler: Marks a method within a @Controller or @ControllerAdvice to handle specific exceptions.
+   @ResponseStatus(HttpStatus.CREATED) // Returns 201 Created on success
+   public Product createProduct(@RequestBody Product product) { ... }
+   
+   @ResponseStatus(HttpStatus.NOT_FOUND) // Can also be on custom exception class
+   public class ProductNotFoundException extends RuntimeException { ... }
+   ```
+- `@ExceptionHandler`: Marks a method within a `@Controller` or `@ControllerAdvice` to handle specific exceptions.
+   ```java
    @RestControllerAdvice // Or @Controller
-public class GlobalExceptionHandler {
+   public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleProductNotFound(ProductNotFoundException ex) {
+      @ExceptionHandler(ProductNotFoundException.class)
+      @ResponseStatus(HttpStatus.NOT_FOUND)
+      public ErrorResponse handleProductNotFound(ProductNotFoundException ex) {
         return new ErrorResponse("Product not found", ex.getMessage());
-    }
+      }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleIllegalArgument(IllegalArgumentException ex) {
+      @ExceptionHandler(IllegalArgumentException.class)
+      @ResponseStatus(HttpStatus.BAD_REQUEST)
+      public String handleIllegalArgument(IllegalArgumentException ex) {
         return "Invalid input: " + ex.getMessage();
-    }
-}
+      }
+   }
+  ```
+- `@ControllerAdvice`: A specialization of `@Component` that allows you to apply global configurations to controllers, such as global exception handling (`@ExceptionHandler`), global `@ModelAttribute` methods, or global `@InitBinder` methods.
 
- * @ControllerAdvice: A specialization of @Component that allows you to apply global configurations to controllers, such as global exception handling (@ExceptionHandler), global @ModelAttribute methods, or global @InitBinder methods.
-Common Use Case: Standardizing error responses, preventing boilerplate try-catch blocks in controllers.
-Best Practices: Use @ControllerAdvice for global exception handling. Create custom exception classes with @ResponseStatus for common application-specific errors.
-@CrossOrigin for CORS
+**Common Use Case**: Standardizing error responses, preventing boilerplate try-catch blocks in controllers.
+
+**Best Practices**: Use `@ControllerAdvice` for global exception handling. Create custom exception classes with `@ResponseStatus` for common application-specific errors.
+
+### `@CrossOrigin` for CORS
 Used to enable Cross-Origin Resource Sharing (CORS) on a handler method or on a controller class.
-Real-world Example:
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/controller/CorsController.java
 package com.example.myapp.controller;
 
@@ -979,30 +1029,35 @@ public class CorsController {
         return "Data accessible from localhost:3000";
     }
 }
+```
 
-You can also use @CrossOrigin(origins = "*") for all origins (not recommended for production), or specify multiple origins.
-Common Use Case: Enabling frontend applications (running on a different domain/port) to consume APIs from your Spring Boot backend.
-Best Practices: Be specific with origins for security reasons. Configure CORS globally for broad policies or per controller/method for fine-grained control.
-🔐 Security Annotations (Spring Security)
+You can also use `@CrossOrigin(origins = "*")` for all origins (not recommended for production), or specify multiple origins.
+
+**Common Use Case**: Enabling frontend applications (running on a different domain/port) to consume APIs from your Spring Boot backend. 
+
+**Best Practices**: Be specific with origins for security reasons. Configure CORS globally for broad policies or per controller/method for fine-grained control.
+
+## Security Annotations (Spring Security)
 Spring Security provides powerful annotations for securing your application at the web, method, and domain object levels.
-Core Security Annotations
- * @EnableWebSecurity: Used on a @Configuration class to enable Spring Security's web security features. It imports the necessary Spring Security configuration.
+### Core Security Annotations
+- `@EnableWebSecurity`: Used on a `@Configuration` class to enable Spring Security's web security features. It imports the necessary Spring Security configuration.
+   ```java
    // src/main/java/com/example/myapp/config/SecurityConfig.java
-package com.example.myapp.config;
+    package com.example.myapp.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+    import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+    import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+    @Configuration
+    @EnableWebSecurity
+    public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+       @Bean
+       public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+          http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
@@ -1012,145 +1067,166 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .permitAll());
-        return http.build();
+         return http.build();
+       }
     }
-}
+  ```
 
- * @EnableGlobalMethodSecurity (Deprecated - Use @EnableMethodSecurity): Used on a @Configuration class to enable Spring Security's method-level security. It allows you to use annotations like @PreAuthorize, @PostAuthorize, @Secured, and @RolesAllowed on methods.
-   Note: As of Spring Security 5.6+, @EnableGlobalMethodSecurity is deprecated in favor of @EnableMethodSecurity. The new annotation is recommended for new projects.
+- `@EnableGlobalMethodSecurity` **(Deprecated - Use** `@EnableMethodSecurity`**)**: Used on a `@Configuration` class to enable Spring Security's method-level security. It allows you to use annotations like `@PreAuthorize`, `@PostAuthorize`, `@Secured`, and `@RolesAllowed` on methods.
+   ```java
+   Note: As of Spring Security 5.6+, `@EnableGlobalMethodSecurity` is deprecated in favor of `@EnableMethodSecurity`. The new annotation is recommended for new projects.
    // src/main/java/com/example/myapp/config/MethodSecurityConfig.java
-package com.example.myapp.config;
+   package com.example.myapp.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+   import org.springframework.context.annotation.Configuration;
+   import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-@Configuration
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class MethodSecurityConfig {
-    // No additional code here, just enabling method security
-}
+   @Configuration
+   @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+   public class MethodSecurityConfig {
+      // No additional code here, just enabling method security
+   }
+   ```
 
-   * prePostEnabled = true: Enables @PreAuthorize and @PostAuthorize.
-   * securedEnabled = true: Enables @Secured.
-   * jsr250Enabled = true: Enables @RolesAllowed.
-Method Security Annotations
+-  `prePostEnabled = true`: Enables `@PreAuthorize` and `@PostAuthorize`.
+-  `securedEnabled = true`: Enables `@Secured`.
+- `jsr250Enabled = true`: Enables `@RolesAllowed`.
+
+### Method Security Annotations
 These control access to methods based on roles or expressions.
- * @PreAuthorize: Evaluates a Spring Expression Language (SpEL) expression before entering the method.
+- `@PreAuthorize`: Evaluates a Spring Expression Language (SpEL) expression before entering the method.
+   ```java
    @Service
-public class AdminService {
-    @PreAuthorize("hasRole('ADMIN')")
-    public String deleteUser(String userId) {
+   public class AdminService {
+      @PreAuthorize("hasRole('ADMIN')")
+      public String deleteUser(String userId) {
         return "User " + userId + " deleted by ADMIN.";
-    }
+      }
 
-    @PreAuthorize("hasAuthority('USER_READ') and #username == authentication.name")
-    public String getUserProfile(String username) {
+      @PreAuthorize("hasAuthority('USER_READ') and #username == authentication.name")
+      public String getUserProfile(String username) {
         return "Profile for " + username;
-    }
-}
+      }
+   }
+  ```
 
- * @PostAuthorize: Evaluates a SpEL expression after the method has been invoked, typically used to filter or modify the return value.
+- `@PostAuthorize`: Evaluates a SpEL expression after the method has been invoked, typically used to filter or modify the return value.
+   ```java
    @Service
-public class PostService {
-    @PostAuthorize("returnObject.owner == authentication.name")
-    public Post getPostById(Long id) {
+   public class PostService {
+      @PostAuthorize("returnObject.owner == authentication.name")
+      public Post getPostById(Long id) {
         // Returns a Post object
         return new Post(id, "Some Title", "content", "user123");
-    }
-}
+      }
+   }
+  ```
 
- * @Secured: A simpler annotation for role-based access control. Takes a list of role names.
+- `@Secured`: A simpler annotation for role-based access control. Takes a list of role names.
+   ```java
    @Service
-public class ReportingService {
-    @Secured({"ROLE_ADMIN", "ROLE_REPORT_VIEWER"})
-    public String generateReport() {
+   public class ReportingService {
+     @Secured({"ROLE_ADMIN", "ROLE_REPORT_VIEWER"})
+     public String generateReport() {
         return "Report generated.";
-    }
-}
+     }
+   }
+  ```
 
- * @RolesAllowed: JSR-250 annotation, similar to @Secured, also for role-based access control.
+- `@RolesAllowed`: JSR-250 annotation, similar to @Secured, also for role-based access control.
+   ```java
    import jakarta.annotation.security.RolesAllowed; // or javax.annotation.security.RolesAllowed
 
-@Service
-public class AuditingService {
-    @RolesAllowed("ADMIN")
-    public String auditSystem() {
-        return "System audited.";
-    }
-}
+   @Service
+   public class AuditingService {
+      @RolesAllowed("ADMIN")
+      public String auditSystem() {
+         return "System audited.";
+      }
+   }
+  ```
 
-Differences and Use Cases:
- * @PreAuthorize / @PostAuthorize: Most powerful due to SpEL, allowing complex authorization logic (e.g., checking ownership, custom permissions). Preferred for new development.
- * @Secured / @RolesAllowed: Simpler, role-based checks. @Secured is Spring-specific, @RolesAllowed is a standard.
-User Context and Testing Annotations
- * @AuthenticationPrincipal: Used in @Controller or @RestController methods to directly access the currently authenticated principal (user details).
+### Differences and Use Cases:
+- `@PreAuthorize` / `@PostAuthorize`: Most powerful due to SpEL, allowing complex authorization logic (e.g., checking ownership, custom permissions). Preferred for new development.
+- `@Secured` / `@RolesAllowed`: Simpler, role-based checks. `@Secured` is Spring-specific, `@RolesAllowed` is a standard.
+
+### User Context and Testing Annotations
+- `@AuthenticationPrincipal`: Used in `@Controller` or `@RestController` methods to directly access the currently authenticated principal (user details).
+   ```java
    import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+   import org.springframework.security.core.userdetails.UserDetails;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class UserProfileController {
+   @RestController
+   public class UserProfileController {
 
-    @GetMapping("/my-profile")
-    public String getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return "Welcome, " + userDetails.getUsername() + "! Roles: " + userDetails.getAuthorities();
-    }
-}
+      @GetMapping("/my-profile")
+      public String getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
+         return "Welcome, " + userDetails.getUsername() + "! Roles: " + userDetails.getAuthorities();
+      }
+   }
+  ```
 
- * @WithMockUser: For testing Spring Security. Allows you to run a test method as if a specific user (with roles/authorities) is authenticated.
+- `@WithMockUser`: For testing Spring Security. Allows you to run a test method as if a specific user (with roles/authorities) is authenticated.
+   ```java
    // src/test/java/com/example/myapp/service/AdminServiceTest.java
-package com.example.myapp.service;
+   package com.example.myapp.service;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.test.context.support.WithMockUser;
+   import org.junit.jupiter.api.Test;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.boot.test.context.SpringBootTest;
+   import org.springframework.security.access.AccessDeniedException;
+   import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+   import static org.junit.jupiter.api.Assertions.assertThrows;
+   import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-public class AdminServiceTest {
+   @SpringBootTest
+   public class AdminServiceTest {
 
-    @Autowired
-    private AdminService adminService;
+       @Autowired
+       private AdminService adminService;
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testDeleteUser_AsAdmin() {
-        String result = adminService.deleteUser("user123");
-        assertTrue(result.contains("deleted by ADMIN"));
-    }
+       @Test
+       @WithMockUser(roles = "ADMIN")
+       void testDeleteUser_AsAdmin() {
+          String result = adminService.deleteUser("user123");
+          assertTrue(result.contains("deleted by ADMIN"));
+       }
 
-    @Test
-    @WithMockUser(roles = "USER")
-    void testDeleteUser_AsUser_AccessDenied() {
-        assertThrows(AccessDeniedException.class, () -> adminService.deleteUser("user123"));
-    }
-}
+       @Test
+       @WithMockUser(roles = "USER")
+       void testDeleteUser_AsUser_AccessDenied() {
+          assertThrows(AccessDeniedException.class, () -> adminService.deleteUser("user123"));
+       }
+   }
+  ```
 
- * @PermitAll: JSR-250 annotation. Indicates that all authenticated users are allowed to access the method.
- * @DenyAll: JSR-250 annotation. Indicates that no authenticated user is allowed to access the method.
- * @Anonymous: Spring Security specific. Allows unauthenticated access. (Less common for method security directly, more for endpoint configuration).
-Best Practices:
- * Use method security for fine-grained authorization logic.
- * Prefer @PreAuthorize for most use cases due to its flexibility.
- * Thoroughly test security rules using @WithMockUser or SecurityMockMvcRequestBuilders.
- * Don't mix @Secured and @PreAuthorize on the same method. Choose one style.
-📡 Persistence Annotations (Spring Data JPA)
+- `@PermitAll`: JSR-250 annotation. Indicates that all authenticated users are allowed to access the method.
+- `@DenyAll`: JSR-250 annotation. Indicates that no authenticated user is allowed to access the method.
+- `@Anonymous`: Spring Security specific. Allows unauthenticated access. (Less common for method security directly, more for endpoint configuration).
+
+### Best Practices:
+- Use method security for fine-grained authorization logic.
+- Prefer `@PreAuthorize` for most use cases due to its flexibility.
+- Thoroughly test security rules using `@WithMockUser` or `SecurityMockMvcRequestBuilders`.
+- Don't mix `@Secured` and `@PreAuthorize` on the same method. Choose one style.
+
+## Persistence Annotations (Spring Data JPA)
 These annotations are primarily from the Java Persistence API (JPA) specification and are used with Spring Data JPA to define and map entities to a relational database.
-Entity Mapping
- * @Entity: Declares the class as an entity bean, representing a table in the database.
- * @Table: Specifies the primary table for the annotated entity. Can define table name, schema, unique constraints.
- * @Id: Marks a field as the primary key of the entity.
- * @GeneratedValue: Specifies how the primary key value is generated.
-   * strategy = GenerationType.AUTO: Let the persistence provider choose.
-   * strategy = GenerationType.IDENTITY: Uses database identity columns (e.g., auto-increment).
-   * strategy = GenerationType.SEQUENCE: Uses a database sequence.
-   * strategy = GenerationType.TABLE: Uses a separate table to store sequence values.
-Real-world Example:
+### Entity Mapping
+- `@Entity`: Declares the class as an entity bean, representing a table in the database.
+- `@Table`: Specifies the primary table for the annotated entity. Can define table name, schema, unique constraints.
+- `@Id`: Marks a field as the primary key of the entity.
+- `@GeneratedValue`: Specifies how the primary key value is generated.
+  - `strategy = GenerationType.AUTO`: Let the persistence provider choose.
+  - `strategy = GenerationType.IDENTITY`: Uses database identity columns (e.g., auto-increment).
+  - `strategy = GenerationType.SEQUENCE`: Uses a database sequence.
+  - `strategy = GenerationType.TABLE`: Uses a separate table to store sequence values.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/entity/Product.java
 package com.example.myapp.entity;
 
@@ -1187,15 +1263,18 @@ public class Product {
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
 }
+```
 
-Column and Relationship Mapping
- * @Column: Specifies the mapped column for a persistent property or field. Allows defining column name, nullability, length, etc.
- * @JoinColumn: Used in a many-to-one or one-to-one relationship to specify the foreign key column.
- * @ManyToOne: Defines a many-to-one relationship.
- * @OneToMany: Defines a one-to-many relationship.
- * @OneToOne: Defines a one-to-one relationship.
- * @ManyToMany: Defines a many-to-many relationship.
-Real-world Example (Relationships):
+### Column and Relationship Mapping
+- `@Column`: Specifies the mapped column for a persistent property or field. Allows defining column name, nullability, length, etc.
+- `@JoinColumn`: Used in a many-to-one or one-to-one relationship to specify the foreign key column.
+- `@ManyToOne`: Defines a many-to-one relationship.
+- `@OneToMany`: Defines a one-to-many relationship.
+- `@OneToOne`: Defines a one-to-one relationship.
+- `@ManyToMany`: Defines a many-to-many relationship.
+
+#### Real-world Example (Relationships):
+```java
 // src/main/java/com/example/myapp/entity/Category.java
 package com.example.myapp.entity;
 
@@ -1222,6 +1301,9 @@ public class Category {
     public void setProducts(List<Product> products) { this.products = products; }
 }
 
+```
+
+```java
 // Modify Product.java to include ManyToOne relationship
 // src/main/java/com/example/myapp/entity/Product.java
 // ...
@@ -1232,17 +1314,20 @@ private Category category;
 // Add getter and setter for category
 public Category getCategory() { return category; }
 public void setCategory(Category category) { this.category = category; }
+```
 
-Other Mapping Annotations
- * @Enumerated: Specifies that a persistent property or field should be persisted as an enumerated type.
-   * EnumType.ORDINAL: Stores the enum's ordinal value (integer).
-   * EnumType.STRING: Stores the enum's name (string). (Recommended for readability and robustness)
- * @Temporal: Specifies the type of the date/time field.
-   * TemporalType.DATE: Only the date part.
-   * TemporalType.TIME: Only the time part.
-   * TemporalType.TIMESTAMP: Both date and time.
- * @Transient: Marks a field that should not be persisted to the database.
-Real-world Example:
+### Other Mapping Annotations
+- `@Enumerated`: Specifies that a persistent property or field should be persisted as an enumerated type.
+  - `EnumType.ORDINAL`: Stores the enum's ordinal value (integer).
+  - `EnumType.STRING`: Stores the enum's name (string). (Recommended for readability and robustness)
+- `@Temporal`: Specifies the type of the date/time field.
+  - `TemporalType.DATE`: Only the date part.
+  - `TemporalType.TIME`: Only the time part.
+  - `TemporalType.TIMESTAMP`: Both date and time.
+- `@Transient`: Marks a field that should not be persisted to the database.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/entity/Order.java
 package com.example.myapp.entity;
 
@@ -1284,59 +1369,72 @@ public class Order {
     public String getTransientField() { return transientField; }
     public void setTransientField(String transientField) { this.transientField = transientField; }
 }
+```
 
-Spring Data JPA Specific Annotations
- * @Query: Used on methods in a Spring Data JPA Repository interface to define custom queries using JPQL (Java Persistence Query Language) or native SQL.
+### Spring Data JPA Specific Annotations
+- `@Query`: Used on methods in a Spring Data JPA `Repository` interface to define custom queries using JPQL (Java Persistence Query Language) or native SQL.
+   ```java
    // src/main/java/com/example/myapp/repository/ProductRepository.java
-package com.example.myapp.repository;
+   package com.example.myapp.repository;
 
-import com.example.myapp.entity.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import java.util.List;
+   import com.example.myapp.entity.Product;
+   import org.springframework.data.jpa.repository.JpaRepository;
+   import org.springframework.data.jpa.repository.Query;
+   import org.springframework.data.repository.query.Param;
+   import java.util.List;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+   public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByNameContainingIgnoreCase(String name); // Derived query
+      List<Product> findByNameContainingIgnoreCase(String name); // Derived query
 
-    @Query("SELECT p FROM Product p WHERE p.price < :maxPrice") // JPQL
-    List<Product> findProductsBelowPrice(@Param("maxPrice") Double maxPrice);
+      @Query("SELECT p FROM Product p WHERE p.price < :maxPrice") // JPQL
+      List<Product> findProductsBelowPrice(@Param("maxPrice") Double maxPrice);
 
-    @Query(value = "SELECT * FROM products WHERE product_name LIKE %:name%", nativeQuery = true) // Native SQL
-    List<Product> findProductsByNameNative(@Param("name") String name);
-}
+      @Query(value = "SELECT * FROM products WHERE product_name LIKE %:name%", nativeQuery = true) // Native SQL
+      List<Product> findProductsByNameNative(@Param("name") String name);
+   }
+  ```
 
- * @Modifying: Used with @Query to indicate that a query is an update or delete operation, requiring a transaction.
+- `@Modifying`: Used with `@Query` to indicate that a query is an update or delete operation, requiring a transaction.
+  ```java
    import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
+   import org.springframework.data.jpa.repository.Query;
+   import org.springframework.transaction.annotation.Transactional;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+   public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Modifying // Indicates this is an update/delete query
-    @Transactional // Required for modifying operations
-    @Query("UPDATE Product p SET p.price = :newPrice WHERE p.id = :id")
-    int updateProductPrice(@Param("id") Long id, @Param("newPrice") Double newPrice);
-}
+      @Modifying // Indicates this is an update/delete query
+      @Transactional // Required for modifying operations
+      @Query("UPDATE Product p SET p.price = :newPrice WHERE p.id = :id")
+      int updateProductPrice(@Param("id") Long id, @Param("newPrice") Double newPrice);
+   }
+  ```
 
- * @Transactional: (Already discussed, but crucial here) Ensures that a method executes within a database transaction. Essential for operations that modify data (create, update, delete).
-Common Use Case: Defining data models, performing CRUD operations, and writing custom database queries.
-Best Practices:
- * Use derived query methods in Spring Data JPA when possible (e.g., findByLastNameAndFirstName).
- * Use @Query for more complex queries that derived methods can't express.
- * Prefer JPQL over native SQL for better portability and type safety, but use native SQL when necessary for database-specific features or performance.
- * Always use @Transactional on service methods that involve data modification.
-🔄 Transactional and Async Behavior
+- `@Transactional`: (Already discussed, but crucial here) Ensures that a method executes within a database transaction. Essential for operations that modify data (create, update, delete).
+
+**Common Use Case**: Defining data models, performing CRUD operations, and writing custom database queries.
+
+### Best Practices:
+- Use derived query methods in Spring Data JPA when possible (e.g., `findByLastNameAndFirstName`).
+- Use `@Query` for more complex queries that derived methods can't express.
+- Prefer JPQL over native SQL for better portability and type safety, but use native SQL when necessary for database-specific features or performance.
+- Always use `@Transactional` on service methods that involve data modification.
+
+---
+
+##  Transactional and Async Behavior
 These annotations manage atomic operations and asynchronous method execution.
-@Transactional
+
+### `@Transactional`
 Ensures that a method or a class executes within a transactional context. If an unchecked exception occurs, the transaction is rolled back. If it's a checked exception (by default), it's committed.
-Key attributes:
- * propagation: Defines how transactional boundaries are managed (e.g., REQUIRED (default), REQUIRES_NEW, SUPPORTS, NOT_SUPPORTED, NEVER, MANDATORY, NESTED).
- * isolation: Defines the isolation level of the transaction (e.g., DEFAULT, READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE).
- * rollbackFor / noRollbackFor: Specifies exceptions that should or should not cause a rollback.
- * readOnly: Optimizes read-only transactions (e.g., by not flushing the session).
-Real-world Example:
+#### Key attributes:
+- `propagation`: Defines how transactional boundaries are managed (e.g., `REQUIRED` (default), `REQUIRES_NEW`, `SUPPORTS`, `NOT_SUPPORTED`, `NEVER`, `MANDATORY`, `NESTED`).
+- `isolation`: Defines the isolation level of the transaction (e.g., `DEFAULT`, `READ_UNCOMMITTED`, `READ_COMMITTED`, `REPEATABLE_READ`, `SERIALIZABLE`).
+- `rollbackFor` / `noRollbackFor`: Specifies exceptions that should or should not cause a rollback.
+- `readOnly`: Optimizes read-only transactions (e.g., by not flushing the session). 
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/service/OrderService.java
 package com.example.myapp.service;
 
@@ -1382,17 +1480,22 @@ public class OrderService {
         // ... more logic (will not be reached if exception is thrown)
     }
 }
+```
 
-Common Use Case: Ensuring data consistency for database operations.
-Best Practices:
- * Apply @Transactional at the service layer, not directly on repositories or controllers.
- * Keep transactional methods concise and focused on a single business operation.
- * Understand propagation behavior to avoid unexpected transaction outcomes.
- * For read-only operations, set readOnly = true for performance benefits.
-@Async
-Marks a method for asynchronous execution. When an @Async method is called, it executes in a separate thread from the caller, allowing the caller to proceed without waiting for the method to complete.
- * @EnableAsync: Must be placed on a @Configuration class to enable Spring's asynchronous method execution capability.
-Real-world Example:
+**Common Use Case**: Ensuring data consistency for database operations.
+
+**Best Practices**:
+- Apply `@Transactional` at the service layer, not directly on repositories or controllers.
+- Keep transactional methods concise and focused on a single business operation.
+- Understand `propagation` behavior to avoid unexpected transaction outcomes.
+- For read-only operations, set `readOnly = true` for performance benefits.
+
+## `@Async`
+Marks a method for asynchronous execution. When an `@Async` method is called, it executes in a separate thread from the caller, allowing the caller to proceed without waiting for the method to complete.
+- `@EnableAsync`: Must be placed on a `@Configuration` class to enable Spring's asynchronous method execution capability.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/config/AsyncConfig.java
 package com.example.myapp.config;
 
@@ -1404,7 +1507,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class AsyncConfig {
     // This class enables async support
 }
+```
 
+```java
 // src/main/java/com/example/myapp/service/NotificationService.java
 package com.example.myapp.service;
 
@@ -1435,7 +1540,9 @@ public class NotificationService {
         // Simulate database write or file I/O
     }
 }
+```
 
+```java
 // How to call it from a controller or another service
 // In a Controller or Service
 import com.example.myapp.service.NotificationService;
@@ -1468,32 +1575,39 @@ public class AsyncController {
         return "Notification process initiated. Email result: " + result;
     }
 }
+```
 
-Common Use Case: Improving responsiveness for long-running operations (e.g., sending emails, processing files, calling external APIs) by offloading them from the main request thread.
-Best Practices:
- * Methods annotated with @Async must be public.
- * Self-invocation (calling an @Async method from within the same class) will not work because the proxy is not invoked. You need to inject the service into itself or a separate bean.
- * Return void or Future/CompletableFuture for asynchronous methods.
- * Handle exceptions in asynchronous methods carefully, as they won't propagate back to the caller's thread directly. Use AsyncUncaughtExceptionHandler.
-💬 Validation Annotations
+**Common Use Case**: Improving responsiveness for long-running operations (e.g., sending emails, processing files, calling external APIs) by offloading them from the main request thread.
+**Best Practices**:
+- Methods annotated with `@Async` must be `public`.
+- Self-invocation (calling an `@Async` method from within the same class) will not work because the proxy is not invoked. You need to inject the service into itself or a separate bean.
+- Return `void` or `Future`/`CompletableFuture` for asynchronous methods.
+- Handle exceptions in asynchronous methods carefully, as they won't propagate back to the caller's thread directly. Use `AsyncUncaughtExceptionHandler`.
+
+---
+
+## Validation Annotations
 Used for validating data, especially incoming request bodies in web applications.
-Bean Validation (JSR 380/JSR 303)
+### Bean Validation (JSR 380/JSR 303)
 These are standard Java annotations for defining validation rules.
- * @NotNull: The annotated element must not be null.
- * @NotEmpty: The annotated element must not be null or empty (for collections, maps, arrays, strings).
- * @NotBlank: The annotated string must not be null and must contain at least one non-whitespace character.
- * @Size(min, max): The size of the annotated element must be between min and max (inclusive).
- * @Min(value): The annotated value must be greater than or equal to the specified minimum.
- * @Max(value): The annotated value must be less than or equal to the specified maximum.
- * @Email: The annotated string must be a valid email address.
- * @Pattern(regexp): The annotated string must match the specified regular expression.
- * @Future / @FutureOrPresent / @Past / @PastOrPresent: For dates.
- * @Positive / @PositiveOrZero / @Negative / @NegativeOrZero: For numbers.
-@Validated, @Valid for Request Validation
+- `@NotNull`: The annotated element must not be `null`.
+- `@NotEmpty`: The annotated element must not be ``null`` or empty (for collections, maps, arrays, strings).
+- `@NotBlank`: The annotated string must not be null and must contain at least one non-whitespace character.
+- `@Size(min, max)`: The size of the annotated element must be between `min` and `max` (inclusive).
+- `@Min(value)`: The annotated value must be greater than or equal to the specified minimum.
+- `@Max(value)`: The annotated value must be less than or equal to the specified maximum.
+- `@Email`: The annotated string must be a valid email address.
+- `@Pattern(regexp)`: The annotated string must match the specified regular expression.
+- `@Future` / `@FutureOrPresent` / `@Past` / `@PastOrPresent`: For dates.
+- `@Positive` / `@PositiveOrZero` / `@Negative` / `@NegativeOrZero`: For numbers.
+
+### `@Validated`, `@Valid` for Request Validation
 These annotations trigger the Bean Validation process.
- * @Valid: Triggers validation of an object (e.g., a request body). It's a standard JSR-380 annotation.
- * @Validated: A Spring-specific annotation that can be used on classes or method parameters to enable validation. It also supports validation groups and integration with Spring's AOP.
-Real-world Example:
+- `@Valid`: Triggers validation of an object (e.g., a request body). It's a standard JSR-380 annotation.
+- `@Validated`: A Spring-specific annotation that can be used on classes or method parameters to enable validation. It also supports validation groups and integration with Spring's AOP.
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/model/UserRegistrationForm.java
 package com.example.myapp.model;
 
@@ -1526,7 +1640,9 @@ public class UserRegistrationForm {
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
 }
+```
 
+```java
 // src/main/java/com/example/myapp/controller/UserRegistrationController.java
 package com.example.myapp.controller;
 
@@ -1552,26 +1668,37 @@ public class UserRegistrationController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully: " + registrationForm.getUsername());
     }
 }
+```
 
-Common Use Case: Validating user input from web forms or REST API requests to ensure data integrity.
-Best Practices:
- * Use Bean Validation annotations on your DTOs (Data Transfer Objects) or domain models.
- * Use @Valid on the method parameter to trigger validation.
- * For REST APIs, consider using @ControllerAdvice and @ExceptionHandler to provide standardized error responses for MethodArgumentNotValidException (thrown when @Valid fails).
-🧰 Configuration and Conditional Beans
+**Common Use Case**: Validating user input from web forms or REST API requests to ensure data integrity.
+
+**Best Practices**:
+- Use Bean Validation annotations on your DTOs (Data Transfer Objects) or domain models.
+- Use `@Valid` on the method parameter to trigger validation.
+- For REST APIs, consider using `@ControllerAdvice` and `@ExceptionHandler` to provide standardized error responses for `MethodArgumentNotValidException` (thrown when `@Valid` fails).
+
+---
+
+## Configuration and Conditional Beans
 These annotations help in externalizing configuration and importing other configuration sources.
-@EnableConfigurationProperties, @ConfigurationProperties, @ConstructorBinding
-These annotations provide a type-safe way to bind external properties (e.g., from application.properties or application.yml) to Java objects.
- * @ConfigurationProperties: Binds a set of related properties to a Java object.
- * @EnableConfigurationProperties: Used on a @Configuration class to enable @ConfigurationProperties support for one or more classes.
- * @ConstructorBinding: Allows @ConfigurationProperties to bind properties to immutable objects via constructor arguments (since Spring Boot 2.2).
-Real-world Example:
+
+`@EnableConfigurationProperties`, `@ConfigurationProperties`, `@ConstructorBinding`
+
+These annotations provide a type-safe way to bind external properties (e.g., from `application.properties` or `application.yml`) to Java objects.
+- `@ConfigurationProperties`: Binds a set of related properties to a Java object.
+- `@EnableConfigurationProperties`: Used on a `@Configuration` class to enable `@ConfigurationProperties` support for one or more classes.
+- `@ConstructorBinding`: Allows `@ConfigurationProperties` to bind properties to immutable objects via constructor arguments (since Spring Boot 2.2).
+
+#### Real-world Example:
+```java
 // src/main/resources/application.properties
 myapp.service.url=http://api.example.com
 myapp.service.username=user
 myapp.service.password=pass
 myapp.service.retries=3
+```
 
+```java
 // src/main/java/com/example/myapp/config/ServiceProperties.java
 package com.example.myapp.config;
 
@@ -1612,7 +1739,9 @@ public class ServiceProperties {
     public void setRetries(int retries) { this.retries = retries; }
     */
 }
+```
 
+```java
 // src/main/java/com/example/myapp/config/AppConfiguration.java
 package com.example.myapp.config;
 
@@ -1646,12 +1775,17 @@ public class ExternalApiService {
         System.out.println("Retries: " + serviceProperties.getRetries());
     }
 }
+```
 
-Common Use Case: Creating strongly typed configuration objects, especially when dealing with many related properties.
-Best Practices: Prefer @ConfigurationProperties over multiple @Value annotations for better organization, type safety, and IDE support. Use @ConstructorBinding for immutable configuration objects.
-@PropertySource
-Used to specify the location of additional property files to be loaded into the Spring Environment.
-Real-world Example:
+**Common Use Case**: Creating strongly typed configuration objects, especially when dealing with many related properties.
+
+**Best Practices**: Prefer `@ConfigurationProperties` over multiple `@Value` annotations for better organization, type safety, and IDE support. Use `@ConstructorBinding` for immutable configuration objects.
+
+### `@PropertySource`
+Used to specify the location of additional property files to be loaded into the Spring `Environment`.
+
+#### Real-world Example:
+```java
 // src/main/resources/custom.properties
 custom.message=Hello from custom properties!
 
@@ -1675,14 +1809,19 @@ public class CustomPropertyConfig {
         return message;
     }
 }
+```
 
-Common Use Case: Loading properties from files other than application.properties (e.g., module-specific configurations, sensitive data files not bundled by default).
-Best Practices: Only use for additional property files. For the primary application configuration, application.properties/yml is automatically loaded.
-@Import, @ImportResource
-Used to import other @Configuration classes or XML configuration files.
- * @Import: Imports one or more @Configuration classes, @ImportSelector, or ImportBeanDefinitionRegistrar.
- * @ImportResource: Imports Spring XML configuration files.
-Real-world Example (@Import):
+**Common Use Case**: Loading properties from files other than `application.properties` (e.g., module-specific configurations, sensitive data files not bundled by default).
+
+**Best Practices**: Only use for additional property files. For the primary application configuration, `application.properties`/`yml` is automatically loaded.
+
+### `@Import`, `@ImportResource`
+Used to import other `@Configuration` classes or XML configuration files.
+- `@Import`: Imports one or more `@Configuration` classes, `@ImportSelector`, or `ImportBeanDefinitionRegistrar`.
+- `@ImportResource`: Imports Spring XML configuration files.
+
+#### Real-world Example (`@Import`):
+```java
 // src/main/java/com/example/myapp/config/ServiceConfig.java
 package com.example.myapp.config;
 
@@ -1709,8 +1848,10 @@ import org.springframework.context.annotation.Import;
 public class AppConfig {
     // All beans from ServiceConfig are now available
 }
+```
 
-Real-world Example (@ImportResource):
+#### Real-world Example (`@ImportResource`):
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1718,7 +1859,9 @@ Real-world Example (@ImportResource):
 
     <bean id="legacyProcessor" class="com.example.myapp.component.LegacyProcessor"/>
 </beans>
+```
 
+```java
 // src/main/java/com/example/myapp/config/LegacyConfig.java
 package com.example.myapp.config;
 
@@ -1730,20 +1873,28 @@ import org.springframework.context.annotation.ImportResource;
 public class LegacyConfig {
     // legacyProcessor bean is now available
 }
+```
 
-Common Use Case: Structuring configurations into modular units, or integrating with legacy Spring applications that still use XML configuration.
-Best Practices: Prefer @Import for pure Java configurations. Use @ImportResource only when necessary for backward compatibility.
-🛠 AOP and Eventing Annotations
+**Common Use Case**: Structuring configurations into modular units, or integrating with legacy Spring applications that still use XML configuration.
+
+**Best Practices**: Prefer `@Import` for pure Java configurations. Use `@ImportResource` only when necessary for backward compatibility.
+
+--- 
+
+## AOP and Eventing Annotations
 These annotations enable Aspect-Oriented Programming (AOP) and event-driven communication within your application.
-AOP Annotations
+
+### AOP Annotations
 Spring AOP allows you to modularize cross-cutting concerns (e.g., logging, security, transaction management) by defining "aspects."
- * @Aspect: Declares a class as an aspect. Requires AspectJ on the classpath and @EnableAspectJAutoProxy on a configuration.
- * @Before: Advice that executes before a join point.
- * @After: Advice that executes after a join point (whether it returns normally or throws an exception).
- * @Around: Advice that completely surrounds a join point, allowing you to perform actions before and after the method execution, and even to prevent the method from executing.
- * @AfterReturning: Advice that executes after a join point completes successfully (returns normally).
- * @AfterThrowing: Advice that executes after a join point throws an exception.
-Real-world Example (Logging Aspect):
+- `@Aspect`: Declares a class as an aspect. Requires AspectJ on the classpath and `@EnableAspectJAutoProxy` on a configuration.
+- `@Before`: Advice that executes before a join point.
+- `@After`: Advice that executes after a join point (whether it returns normally or throws an exception).
+- `@Around`: Advice that completely surrounds a join point, allowing you to perform actions before and after the method execution, and even to prevent the method from executing.
+- `@AfterReturning`: Advice that executes after a join point completes successfully (returns normally).
+- `@AfterThrowing`: Advice that executes after a join point throws an exception.
+
+### Real-world Example (Logging Aspect):
+```java
 // src/main/java/com/example/myapp/aspect/LoggingAspect.java
 package com.example.myapp.aspect;
 
@@ -1785,16 +1936,22 @@ public class LoggingAspect {
         return result;
     }
 }
+```
 
-To enable AOP in a Spring Boot application, ensure you have spring-boot-starter-aop dependency. This typically enables @EnableAspectJAutoProxy automatically.
-Common Use Case: Logging, performance monitoring, security checks, transaction management (though Spring's @Transactional often handles this via its own AOP).
-Best Practices: Keep aspects focused on single cross-cutting concerns. Define pointcuts precisely to avoid unintended advice execution.
-Eventing Annotations
+To enable AOP in a Spring Boot application, ensure you have `spring-boot-starter-aop` dependency. This typically enables `@EnableAspectJAutoProxy` automatically.
+
+**Common Use Case**: Logging, performance monitoring, security checks, transaction management (though Spring's `@Transactional` often handles this via its own AOP).
+
+**Best Practices**: Keep aspects focused on single cross-cutting concerns. Define pointcuts precisely to avoid unintended advice execution.
+
+### Eventing Annotations
 Spring's eventing mechanism allows for loose coupling between components.
- * @EventListener: Marks a method as an event listener. It will be invoked when an application event of the specified type is published.
- * ApplicationEvent: The base class for all application events. You can create custom event classes by extending this.
- * ApplicationListener: An interface for event listeners (older, functional alternative to @EventListener).
-Real-world Example:
+- `@EventListener`: Marks a method as an event listener. It will be invoked when an application event of the specified type is published.
+- `ApplicationEvent`: The base class for all application events. You can create custom event classes by extending this.
+- `ApplicationListener`: An interface for event listeners (older, functional alternative to @EventListener).
+
+#### Real-world Example:
+```java
 // src/main/java/com/example/myapp/event/ProductCreatedEvent.java
 package com.example.myapp.event;
 
@@ -1813,7 +1970,9 @@ public class ProductCreatedEvent extends ApplicationEvent {
         return product;
     }
 }
+```
 
+```java
 // src/main/java/com/example/myapp/service/ProductManagementService.java
 package com.example.myapp.service;
 
@@ -1840,7 +1999,9 @@ public class ProductManagementService {
         return product;
     }
 }
+```
 
+```java
 // src/main/java/com/example/myapp/listener/ProductEventListener.java
 package com.example.myapp.listener;
 
@@ -1857,215 +2018,232 @@ public class ProductEventListener {
         // Perform actions like sending notification, updating cache, etc.
     }
 }
+```
 
-Common Use Case: Decoupling components. When one component needs to inform others about a state change without direct dependencies.
-Best Practices:
- * Keep events granular and focused.
- * Use @EventListener for most cases.
- * For complex scenarios, consider asynchronous event handling (e.g., @Async on event listener methods).
-🧪 Testing Annotations
+**Common Use Case**: Decoupling components. When one component needs to inform others about a state change without direct dependencies. <br>
+**Best Practices**:
+- Keep events granular and focused.
+- Use `@EventListener` for most cases.
+- For complex scenarios, consider asynchronous event handling (e.g., `@Async` on event listener methods).
+
+---
+## Testing Annotations
 Spring Boot provides a rich set of testing annotations to simplify testing various layers of your application.
- * @SpringBootTest: The most comprehensive testing annotation. It loads the full Spring application context, making it suitable for integration tests.
-   * webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT: Starts a web server on a random port.
-   * webEnvironment = SpringBootTest.WebEnvironment.MOCK: Provides a mock web environment without starting a real server.
-   * classes = MyConfig.class: Specify a particular configuration class.
-   <!-- end list -->
+- `@SpringBootTest`: The most comprehensive testing annotation. It loads the full Spring application context, making it suitable for integration tests.
+  - webEnvironment` = SpringBootTest.WebEnvironment.RANDOM_PORT: Starts a web server on a random port.
+  - webEnvironment` = SpringBootTest.WebEnvironment.MOCK: Provides a mock web environment without starting a real server.
+  - classes = MyConfig.class: Specify a particular configuration class.
+   ```java
    // src/test/java/com/example/myapp/IntegrationTest.java
-package com.example.myapp;
+   package com.example.myapp;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
+   import org.junit.jupiter.api.Test;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.boot.test.context.SpringBootTest;
+   import org.springframework.boot.test.web.client.TestRestTemplate;
+   import org.springframework.boot.test.web.server.LocalServerPort;
 
-import static org.assertj.core.api.Assertions.assertThat;
+   import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class IntegrationTest {
+   @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+   public class IntegrationTest {
 
-    @LocalServerPort
-    private int port;
+       @LocalServerPort
+       private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+       @Autowired
+       private TestRestTemplate restTemplate;
 
-    @Test
-    void contextLoads() {
-        // Verifies that the Spring context loads successfully
-    }
+       @Test
+       void contextLoads() {
+          // Verifies that the Spring context loads successfully
+        }
 
-    @Test
-    void greetingShouldReturnDefaultMessage() {
-        assertThat(restTemplate.getForObject("http://localhost:" + port + "/hello", String.class))
+       @Test
+       void greetingShouldReturnDefaultMessage() {
+          assertThat(restTemplate.getForObject("http://localhost:" + port + "/hello", String.class))
                 .contains("Hello, World!");
-    }
-}
+       }
+   }
+  ```
 
- * @WebMvcTest: Focuses on testing Spring MVC controllers. It auto-configures Spring MVC components (like DispatcherServlet) but does not load the full application context. Ideal for unit/integration testing web layers without database or other backend dependencies.
-   * Requires MockMvc for making requests.
-   * Can specify which controller to test (e.g., @WebMvcTest(MyController.class)).
-   <!-- end list -->
+- `@WebMvcTest`: Focuses on testing Spring MVC controllers. It auto-configures Spring MVC components (like `DispatcherServlet`) but does not load the full application context. Ideal for unit/integration testing web layers without database or other backend dependencies.
+  - Requires `MockMvc` for making requests.
+  - Can specify which controller to test (e.g., `@WebMvcTest(MyController.class)`).
+   ```java
    // src/test/java/com/example/myapp/controller/ProductRestControllerTest.java
-package com.example.myapp.controller;
+    package com.example.myapp.controller;
 
-import com.example.myapp.model.Product;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+    import com.example.myapp.model.Product;
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import org.junit.jupiter.api.Test;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+    import org.springframework.boot.test.mock.mockito.MockBean;
+    import org.springframework.http.MediaType;
+    import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+    import static org.mockito.BDDMockito.given;
+    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+    import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+    import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ProductRestController.class) // Test only this controller
-public class ProductRestControllerTest {
+    @WebMvcTest(ProductRestController.class) // Test only this controller
+    public class ProductRestControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+       @Autowired
+       private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper; // To convert objects to JSON
+       @Autowired
+       private ObjectMapper objectMapper; // To convert objects to JSON
 
-    // @MockBean will add mock instances of ProductService into the Spring context
-    // This is crucial to isolate the controller test
-    @MockBean
-    private com.example.myapp.service.ProductService productService; // Assuming ProductRestController depends on this
+       // @MockBean will add mock instances of ProductService into the Spring context
+       // This is crucial to isolate the controller test
+       @MockBean
+       private com.example.myapp.service.ProductService productService; // Assuming ProductRestController depends on this
 
-    @Test
-    void getProductById_ShouldReturnProduct() throws Exception {
-        Product mockProduct = new Product(1L, "Test Product", 100.00);
-        given(productService.getProductDetails(1L)).willReturn("Test Product"); // Mock the service call
+       @Test
+       void getProductById_ShouldReturnProduct() throws Exception {
+          Product mockProduct = new Product(1L, "Test Product", 100.00);
+          given(productService.getProductDetails(1L)).willReturn("Test Product"); // Mock the service call
 
-        mockMvc.perform(get("/api/products/1")
+          mockMvc.perform(get("/api/products/1")
                    .contentType(MediaType.APPLICATION_JSON))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.name").value("Test Product")); // Assert on JSON content
-    }
+       }
 
-    @Test
-    void createProduct_ShouldReturnCreated() throws Exception {
-        Product newProduct = new Product(null, "New Product", 50.00);
-        String productJson = objectMapper.writeValueAsString(newProduct);
+       @Test
+       void createProduct_ShouldReturnCreated() throws Exception {
+          Product newProduct = new Product(null, "New Product", 50.00);
+          String productJson = objectMapper.writeValueAsString(newProduct);
 
-        mockMvc.perform(post("/api/products")
+          mockMvc.perform(post("/api/products")
                    .contentType(MediaType.APPLICATION_JSON)
                    .content(productJson))
                    .andExpect(status().isCreated())
                    .andExpect(jsonPath("$.name").value("New Product"));
+          }
     }
-}
+    ```
 
- * @DataJpaTest: Focuses on testing JPA entities and repositories. It auto-configures an in-memory database and scans for @Entity and Spring Data JPA repositories. It's transactional by default and rolls back after each test.
-   // src/test/java/com/example/myapp/repository/ProductRepositoryTest.java
-package com.example.myapp.repository;
+- `@DataJpaTest`: Focuses on testing JPA entities and repositories. It auto-configures an in-memory database and scans for `@Entity` and Spring Data JPA repositories. It's transactional by default and rolls back after each test.
+   ```java   
+    // src/test/java/com/example/myapp/repository/ProductRepositoryTest.java
+    package com.example.myapp.repository;
 
-import com.example.myapp.entity.Product;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+    import com.example.myapp.entity.Product;
+    import org.junit.jupiter.api.Test;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+    import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.Optional;
+    import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+    import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest // Configures an in-memory database and JPA components
-public class ProductRepositoryTest {
+    @DataJpaTest // Configures an in-memory database and JPA components
+    public class ProductRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager; // Helper for persisting test data
+        @Autowired
+        private TestEntityManager entityManager; // Helper for persisting test data
 
-    @Autowired
-    private ProductRepository productRepository;
+        @Autowired
+        private ProductRepository productRepository;
 
-    @Test
-    void findById_ShouldReturnProduct() {
-        // Given
-        Product product = new Product(null, "Laptop", 1200.00);
-        entityManager.persistAndFlush(product); // Save to in-memory DB
+        @Test
+        void findById_ShouldReturnProduct() {
+           // Given
+           Product product = new Product(null, "Laptop", 1200.00);
+           entityManager.persistAndFlush(product); // Save to in-memory DB
 
-        // When
-        Optional<Product> foundProduct = productRepository.findById(product.getId());
+           // When
+           Optional<Product> foundProduct = productRepository.findById(product.getId());
 
-        // Then
-        assertThat(foundProduct).isPresent();
-        assertThat(foundProduct.get().getName()).isEqualTo("Laptop");
+           // Then
+           assertThat(foundProduct).isPresent();
+           assertThat(foundProduct.get().getName()).isEqualTo("Laptop");
+        }
+
+        @Test
+        void findByNameContainingIgnoreCase_ShouldReturnMatchingProducts() {
+           entityManager.persistAndFlush(new Product(null, "Laptop Pro", 1500.00));
+           entityManager.persistAndFlush(new Product(null, "gaming laptop", 1800.00));
+
+           assertThat(productRepository.findByNameContainingIgnoreCase("laptop")).hasSize(2);
+        }
     }
+   ```
 
-    @Test
-    void findByNameContainingIgnoreCase_ShouldReturnMatchingProducts() {
-        entityManager.persistAndFlush(new Product(null, "Laptop Pro", 1500.00));
-        entityManager.persistAndFlush(new Product(null, "gaming laptop", 1800.00));
-
-        assertThat(productRepository.findByNameContainingIgnoreCase("laptop")).hasSize(2);
-    }
-}
-
- * @MockBean: Adds a Mockito mock for a bean to the Spring application context. If a bean of the same type already exists, it will be replaced by the mock.
- * @SpyBean: Adds a Mockito spy for a bean to the Spring application context. Unlike @MockBean, a spy calls real methods by default, allowing you to selectively mock specific methods while keeping the rest of the original functionality.
+- `@MockBean`: Adds a Mockito mock for a bean to the Spring application context. If a bean of the same type already exists, it will be replaced by the mock.
+- `@SpyBean`: Adds a Mockito spy for a bean to the Spring application context. Unlike `@MockBean`, a spy calls real methods by default, allowing you to selectively mock specific methods while keeping the rest of the original functionality.
+   ```java   
    // Example using @MockBean and @SpyBean
-// Assuming you have a real EmailService and a NotificationService that uses EmailService
+   // Assuming you have a real EmailService and a NotificationService that uses EmailService
 
-// In a test:
-@SpringBootTest
-public class SomeServiceTest {
+   // In a test:
+   @SpringBootTest
+   public class SomeServiceTest {
 
-    @MockBean
-    private EmailService mockEmailService; // Replaces the real EmailService with a mock
+       @MockBean
+       private EmailService mockEmailService; // Replaces the real EmailService with a mock
 
-    @SpyBean
-    private NotificationService spyNotificationService; // Wraps the real NotificationService in a spy
+       @SpyBean
+       private NotificationService spyNotificationService; // Wraps the real NotificationService in a spy
 
-    @Autowired
-    private MyClientCallingService clientService; // Service that uses NotificationService
+       @Autowired
+       private MyClientCallingService clientService; // Service that uses NotificationService
 
-    @Test
-    void testEmailSending() {
-        // When clientService calls notificationService.sendEmail, it will use the mocked email service
-        given(mockEmailService.sendEmail("to", "sub", "body")).willReturn(true); // Example mock
-        clientService.sendEmailToUser("user@example.com");
-        verify(mockEmailService, times(1)).sendEmail("user@example.com", "Welcome", "Hello");
-    }
+       @Test
+       void testEmailSending() {
+          // When clientService calls notificationService.sendEmail, it will use the mocked email service
+          given(mockEmailService.sendEmail("to", "sub", "body")).willReturn(true); // Example mock
+          clientService.sendEmailToUser("user@example.com");
+          verify(mockEmailService, times(1)).sendEmail("user@example.com", "Welcome", "Hello");
+       }
 
-    @Test
-    void testNotificationLogging() {
-        // Call the real method of NotificationService but verify it
-        clientService.triggerNotificationLogging("User Login");
-        verify(spyNotificationService, times(1)).logActivityAsync("User Login");
-        // You can also mock a specific method on the spy while other methods remain real
-        // doReturn("Mocked async result").when(spyNotificationService).sendEmailAsync(any(), any(), any());
-    }
-}
+       @Test
+       void testNotificationLogging() {
+          // Call the real method of NotificationService but verify it
+          clientService.triggerNotificationLogging("User Login");
+          verify(spyNotificationService, times(1)).logActivityAsync("User Login");
+          // You can also mock a specific method on the spy while other methods remain real
+          // doReturn("Mocked async result").when(spyNotificationService).sendEmailAsync(any(), any(), any());
+       }
+   }
+  ```
 
- * @TestConfiguration: Used to define a nested @Configuration class specific to a test. Beans defined here will only be registered in the application context for that specific test.
- * @TestPropertySource: Allows overriding or adding properties specifically for a test environment.
- * @AutoConfigureMockMvc: Used with @SpringBootTest (with WebEnvironment.MOCK) or @WebMvcTest to auto-configure MockMvc, providing a way to make requests to controllers without starting a full HTTP server.
-Common Use Case:
- * @SpringBootTest: Full integration tests, verifying component interactions, end-to-end flows.
- * @WebMvcTest: Testing web layer without touching backend services.
- * @DataJpaTest: Testing persistence layer, ensuring correct entity mappings and repository behavior.
- * @MockBean / @SpyBean: Isolating components for testing by mocking or spying on their dependencies.
-Best Practices:
- * Choose the most specific test slice annotation (@WebMvcTest, @DataJpaTest) to load only the necessary parts of the context, speeding up tests.
- * Use @SpringBootTest when a broader context is required or for true end-to-end testing.
- * Use MockMvc for testing web layers efficiently without real HTTP requests.
- * Clearly distinguish between unit tests (isolated, no Spring context) and integration tests (Spring context loaded).
-🧠 Meta-annotations and Custom Annotations
+- `@TestConfiguration`: Used to define a nested `@Configuration` class specific to a test. Beans defined here will only be registered in the application context for that specific test.
+- `@TestPropertySource`: Allows overriding or adding properties specifically for a test environment.
+- `@AutoConfigureMockMvc`: Used with `@SpringBootTest` (with `WebEnvironment.MOCK`) or `@WebMvcTest` to auto-configure MockMvc, providing a way to make requests to controllers without starting a full HTTP server.
+
+**Common Use Case**:
+- `@SpringBootTest`: Full integration tests, verifying component interactions, end-to-end flows.
+- `@WebMvcTest`: Testing web layer without touching backend services.
+- `@DataJpaTest`: Testing persistence layer, ensuring correct entity mappings and repository behavior.
+- `@MockBean` / `@SpyBean`: Isolating components for testing by mocking or spying on their dependencies.
+
+**Best Practices**:
+- Choose the most specific test slice annotation (`@WebMvcTest`, `@DataJpaTest`) to load only the necessary parts of the context, speeding up tests.
+- Use `@SpringBootTest` when a broader context is required or for true end-to-end testing.
+- Use `MockMvc` for testing web layers efficiently without real HTTP requests.
+- Clearly distinguish between unit tests (isolated, no Spring context) and integration tests (Spring context loaded).
+
+---
+
+## Meta-annotations and Custom Annotations
 Spring's annotation processing is powerful enough to allow you to create your own composite annotations, often called "meta-annotations."
-How to create custom annotations
-To create your own annotation, you use @Target, @Retention, @Documented, and @Inherited.
- * @Target: Specifies the contexts in which the annotation is applicable (e.g., ElementType.TYPE, ElementType.METHOD, ElementType.FIELD).
- * @Retention: Specifies how long the annotation should be retained (e.g., RetentionPolicy.RUNTIME for annotations available at runtime via reflection).
- * @Documented: Indicates that the annotated elements should be documented by javadoc and similar tools.
- * @Inherited: Indicates that an annotation type is automatically inherited. If a class is annotated with it, its subclasses will also be annotated.
-Example Custom Annotation:
+
+### How to create custom annotations
+To create your own annotation, you use `@Target`, `@Retention`, `@Documented`, and `@Inherited`.
+- `@Target`: Specifies the contexts in which the annotation is applicable (e.g., `ElementType.TYPE`, `ElementType.METHOD`, `ElementType.FIELD`).
+- `@Retention`: Specifies how long the annotation should be retained (e.g., `RetentionPolicy.RUNTIME` for annotations available at runtime via reflection).
+- `@Documented`: Indicates that the annotated elements should be documented by `javadoc` and similar tools.
+- `@Inherited`: Indicates that an annotation type is automatically inherited. If a class is annotated with it, its subclasses will also be annotated.
+
+#### Example Custom Annotation:
+```java
 // src/main/java/com/example/myapp/annotations/Loggable.java
 package com.example.myapp.annotations;
 
@@ -2079,12 +2257,16 @@ import java.lang.annotation.Target;
 public @interface Loggable {
     String value() default "No message"; // An optional attribute
 }
+```
 
-You could then create an AOP aspect to process @Loggable methods.
-Compose annotations (e.g., creating your own @ServiceSecured)
+You could then create an AOP aspect to process `@Loggable` methods.
+
+### Compose annotations (e.g., creating your own `@ServiceSecured`)
 This is where meta-annotations become incredibly powerful in Spring. You can combine existing Spring annotations into a new custom annotation, reducing boilerplate and improving semantic clarity.
-Real-world Example: @ServiceSecured
-Let's say you frequently have service methods that are both @Service and @Transactional and need a specific security check.
+
+#### Real-world Example: `@ServiceSecured`
+Let's say you frequently have service methods that are both `@Service` and `@Transactional` and need a specific security check.
+```java
 // src/main/java/com/example/myapp/annotations/ServiceSecured.java
 package com.example.myapp.annotations;
 
@@ -2116,7 +2298,9 @@ public @interface ServiceSecured {
     // @AliasFor(annotation = PreAuthorize.class, attribute = "value")
     // String preAuthorizeValue() default "";
 }
+```
 
+```java
 // src/main/java/com/example/myapp/service/CustomerService.java
 package com.example.myapp.service;
 
@@ -2133,13 +2317,18 @@ public class CustomerService {
         return "Customer " + name + " created.";
     }
 }
+```
 
-Common Use Case: Creating domain-specific stereotypes, reducing redundancy, and improving readability in your codebase.
-Best Practices:
- * Only create custom composite annotations when you find recurring patterns of annotation usage.
- * Use @AliasFor to expose and customize attributes of the meta-annotations.
- * Ensure your custom annotations clearly convey their intent.
-🧠 Best Practices & Pitfalls
+**Common Use Case**: Creating domain-specific stereotypes, reducing redundancy, and improving readability in your codebase.
+
+**Best Practices**:
+- Only create custom composite annotations when you find recurring patterns of annotation usage.
+- Use `@AliasFor` to expose and customize attributes of the meta-annotations.
+- Ensure your custom annotations clearly convey their intent.
+
+--- 
+
+Best Practices & Pitfalls
 Annotations, while powerful, can be misused.
 Where annotations are commonly misused
  * Over-reliance on Field Injection for @Autowired: While convenient, it makes testing harder (can't easily instantiate without Spring), obscures dependencies, and makes circular dependencies harder to diagnose. Prefer constructor injection.
