@@ -519,5 +519,3 @@ This problem is best solved at the **API Gateway** level (e.g., Spring Cloud Gat
 
 ***
 
-You now have a comprehensive, structured understanding of these topics, from theory to advanced system design. Practice these questions, study the code, and trace the logic in the design scenarios. You are well-equipped to demonstrate true mastery. Good luck.
-
