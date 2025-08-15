@@ -1,50 +1,6 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
-# Act as an expert-level Principal Engineer and a world-class technical tutor. Your task is to create a comprehensive, structured, and in-depth curriculum to help me master Inteceptors
-
-The curriculum must be built specifically from the list of subtopics I provide below. Your goal is to take my list and organize it into a logical learning path that takes me from foundational concepts to an advanced level, making me capable of confidently answering any technical interview question on these subjects.
-
-Here is the list of subtopics 
-Custom Interceptors
-Filters vs 
-HATEOAS API
-
-Structure your response as a step-by-step curriculum.
-First, create an introductory module to set the stage. Then, intelligently group my subtopics into Beginner, Intermediate, and Advanced modules. For each subtopic, provide detailed explanations, use simple analogies to clarify complex concepts, and include practical, well-commented code examples where applicable.
-
-Here is the required structure for the curriculum:
-Module 1: Introduction and Core Concepts (The "Why" and "What")
-(You will generate this content to provide foundational context before addressing my list.)
-What is [Your Topic Here]? Explain it in simple terms. Use an analogy.
-Why was it created? What specific problems does it solve?
-Core Architecture \& Philosophy: Explain the fundamental design principles and the high-level architecture.
-
-Module 2, 3, and 4: The Core Curriculum (Beginner, Intermediate, Advanced)
-(You will take my list of subtopics and logically organize them across these three modules.)
-Structure the Subtopics: Arrange my list of subtopics into a progressive order, from the most foundational to the most advanced. Group them into "Beginner," "Intermediate," and "Advanced" sections.
-In-Depth Explanation: For each subtopic in your organized list, provide a deep-dive explanation.
-Code Examples \& Best Practices: Include practical code examples, discuss common use cases, and highlight best practices or common patterns associated with each subtopic.
-
-Module 5: Expert - Interview Mastery
-(After covering all the subtopics, generate this module to prepare me for interviews.)
-Common Interview Questions (Theory): List the top 10-15 conceptual questions an interviewer might ask related to the subtopics we covered and provide concise, expert-level answers.
-Common Interview Questions (Practical/Coding): Provide 3-5 common coding or problem-solving tasks related to the subtopics. Show an ideal solution for each, explaining the thought process.
-System Design Scenarios: Pose 2-3 system design questions where [Your Topic Here] and the concepts we covered would be key components. Outline a high-level solution and explain the design trade-offs.
-
-Begin with Module 1 and wait for me to say "continue" before you proceed to the next module to ensure I have time to digest the information. Maintain your persona as an expert tutor throughout our interaction.
-
-Of course. It's a pleasure to guide you on this journey to master Interceptors. Think of me as your dedicated technical mentor. We'll break down these concepts methodically, ensuring you build a deep, intuitive understanding that will serve you well in any technical interview.
-
-Let's begin with the first module. Take your time to absorb this foundational knowledge. When you're ready, just say "continue," and we'll proceed to the next module.
-
-***
-
-### **Module 1: Introduction and Core Concepts (The "Why" and "What")**
-
-Before we dive into writing code or comparing technologies, it's crucial to understand the fundamental idea behind Interceptors. Why do they exist? What problem were they designed to solve? Getting this right is the key to unlocking everything else.
-
-#### **What is an Interceptor?**
-
+# Interceptors
+## **Module 1: Introduction and Core Concepts**
+### **What is an Interceptor?**
 In simple terms, an **Interceptor** is an object that automatically intercepts and modifies requests and responses without altering the core business logic of your application. It's a mechanism that allows you to run code *before* a primary method is invoked, *after* it completes, or both.
 
 This is a core concept of **Aspect-Oriented Programming (AOP)**, which focuses on separating "cross-cutting concerns" from your main application logic. Cross-cutting concerns are functionalities required in many places but are not central to any single one of them—think logging, security checks, or data transformation.
@@ -59,7 +15,7 @@ This is a core concept of **Aspect-Oriented Programming (AOP)**, which focuses o
 >
 > The guard's job isn't related to the work happening in any specific office. Instead, the guard performs a standard check on everyone—verifying credentials (authentication), checking their bag (validation), and logging their entry time (logging). This checkpoint "intercepts" the visitor's path to add a necessary, separate function. Similarly, an interceptor "catches" a request on its way to a controller to perform these kinds of reusable tasks.
 
-#### **Why Were Interceptors Created?**
+### **Why Were Interceptors Created?**
 
 Interceptors were created to solve a very common and frustrating problem in software development: **code scattering and tangling**.
 
@@ -70,7 +26,7 @@ Without interceptors, logic for common tasks like logging or authentication woul
 
 **Interceptors solve this by centralizing cross-cutting concerns.** You write the logging or security logic once, in one place (the interceptor), and the framework automatically applies it wherever it's needed. This keeps your business logic clean, focused, and lean.
 
-#### **Core Architecture \& Philosophy**
+### **Core Architecture \& Philosophy**
 
 The architecture of interceptors is typically based on the **"Chain of Responsibility"** and **"Inversion of Control (IoC)"** principles.
 
@@ -85,25 +41,15 @@ This architecture ensures that your components are **highly decoupled and reusab
 
 ***
 
-Take your time with these concepts. Once you feel comfortable with the "why" and "what," let me know, and we will move on to the core curriculum.
-
----
-
-# continue
-
-Excellent. Now that we have a solid foundation, let's move on to the practical application and finer details. We'll start with the beginner-level concepts, focusing on the core mechanics and distinctions you absolutely must know.
-
-***
-
-### **Module 2: The Core Curriculum (Beginner)**
+## **Module 2: The Core Curriculum (Beginner)**
 
 In this module, we will address two fundamental topics: the crucial difference between Filters and Interceptors, and how to build your very own custom interceptor. Mastering this section is key to avoiding common misunderstandings and writing clean, effective code.
 
-#### **1. Subtopic: Filters vs. Interceptors**
+### **1. Filters vs. Interceptors**
 
 This is one of the most common points of confusion for developers and a frequent interview question. Both Filters and Interceptors seem to do similar things—intercept requests—but they operate at different levels of the application stack and have different capabilities.
 
-##### **In-Depth Explanation**
+#### **In-Depth Explanation**
 
 * **Filters (e.g., `javax.servlet.Filter` in Java/Spring)** are part of the Servlet specification. They are not managed by the application context (like Spring's `ApplicationContext`) but by the Servlet container (like Tomcat or Jetty). This means they operate *outside* the core application framework. Filters are perfect for tasks that need to happen before the request even reaches the framework's dispatcher, which is responsible for routing the request to your controller.
     * **Scope:** They can intercept *any* incoming HTTP request for a given URL pattern, even requests for static resources like images or CSS files. They have no knowledge of which controller or method will eventually handle the request.
@@ -118,7 +64,7 @@ This is one of the most common points of confusion for developers and a frequent
 >
 > *   An **Interceptor** is like the **personal assistant sitting outside a specific executive's office**. They only deal with visitors who have an appointment with *that* executive. They know who the executive is (the handler method) and can perform more specific tasks, like pulling up the relevant meeting files (accessing other beans) before the visitor goes in.
 
-##### **Comparison Table**
+#### **Comparison Table**
 
 | Feature | Filter | Interceptor |
 | :-- | :-- | :-- |
@@ -129,11 +75,11 @@ This is one of the most common points of confusion for developers and a frequent
 | **Use Cases** | Request/Response encoding, GZIP compression, coarse-grained authentication checks | Fine-grained authentication, logging, auditing, modifying the model before view rendering |
 | **Execution Order** | Filter Chain -> DispatcherServlet -> Interceptor Chain -> Controller |  |
 
-#### **2. Subtopic: Custom Interceptors**
+### **2. Custom Interceptors**
 
 Now let's build one. We'll create a simple interceptor that logs the time it takes to process a request. This is a classic and highly practical use case. We'll use the Spring Boot `HandlerInterceptor` interface as our example.
 
-##### **In-Depth Explanation**
+#### **In-Depth Explanation**
 
 To create a custom interceptor in Spring, you typically implement the `HandlerInterceptor` interface, which has three main methods you can override:
 
@@ -141,7 +87,7 @@ To create a custom interceptor in Spring, you typically implement the `HandlerIn
 2. **`postHandle()`**: Executed *after* the controller method runs but *before* the view is rendered. This allows you to modify the `ModelAndView` object, adding or changing attributes that the view will use. This method is not called if `preHandle()` returns `false`.
 3. **`afterCompletion()`**: Executed *after* the complete request has finished and the view has been rendered. This is the ideal place for cleanup tasks or logging, as it will always be called, even if an exception occurred in the controller.
 
-##### **Code Example: A Performance Logging Interceptor**
+#### **Code Example: A Performance Logging Interceptor**
 
 Let's create an interceptor to measure and log how long a request takes to be handled by the controller.
 
@@ -206,7 +152,7 @@ public class PerformanceInterceptor implements HandlerInterceptor {
 ```
 
 
-##### **Best Practice: Registering the Interceptor**
+#### **Best Practice: Registering the Interceptor**
 
 Creating the interceptor class isn't enough; you must tell the framework when and where to apply it. In Spring, you do this by creating a configuration class that implements `WebMvcConfigurer`.
 
@@ -242,27 +188,15 @@ This configuration tells Spring to use your `PerformanceInterceptor` for all req
 
 ***
 
-We've now covered the essential beginner topics. Review the differences between Filters and Interceptors, and trace the logic in the code examples. When you're ready to move on to the more advanced uses, just say "continue."
-
----
-
-# continue
-
-Wonderful. Let's step up the complexity. Now that you understand how to intercept and modify the request-response lifecycle, we can explore more advanced architectural patterns that leverage this capability.
-
-This module focuses on a design principle that transforms a standard API into a self-discoverable, evolvable system.
-
-***
-
-### **Module 3: The Core Curriculum (Intermediate)**
+## **Module 3: The Core Curriculum (Intermediate)**
 
 In this section, we'll dive into HATEOAS. This isn't a specific technology like an interceptor but rather a powerful constraint of the REST architectural style. Understanding it is crucial for designing robust, long-lasting APIs.
 
-#### **Subtopic: HATEOAS API**
+### **HATEOAS API**
 
 HATEOAS stands for **Hypermedia as the Engine of Application State**. It’s a bit of a mouthful, but the core idea is revolutionary. It's the key ingredient that makes an API truly "RESTful."
 
-##### **In-Depth Explanation**
+#### **In-Depth Explanation**
 
 At its heart, HATEOAS is a principle that says a client should be able to navigate your API and discover all possible actions it can take just by following links provided in the responses from the server.
 
@@ -279,7 +213,7 @@ The client starts with a single entry point URL and, from there, the server's re
 
 **How does this relate to Interceptors?** While HATEOAS is a design principle and Interceptors are a technical mechanism, they can work together powerfully. An interceptor (specifically using `postHandle`) could be used to dynamically inspect a response object before it's sent to the client. Based on the data in the response and the user's permissions, the interceptor could inject the appropriate HATEOAS links. For instance, an admin user might see a `delete` link on a resource, while a regular user would not. This logic can be centralized in an interceptor instead of being scattered across controllers.
 
-##### **Code Example: Building a HATEOAS-driven Response**
+#### **Code Example: Building a HATEOAS-driven Response**
 
 Let's transform a standard API response into a HATEOAS-compliant one using Spring HATEOAS.
 
@@ -388,7 +322,7 @@ Now, the JSON response is far more powerful and descriptive:
 ```
 
 
-##### **Best Practices**
+#### **Best Practices**
 
 * **Provide a `self` link:** Every resource representation should include a link pointing to itself. This is the canonical URL for that resource.
 * **Use Standard Link Relations:** Whenever possible, use IANA-registered link relations like `self`, `next`, `previous`, `collection`. This improves consistency and allows for generic clients. For custom actions, create your own descriptive relation names (e.g., `cancel-order`, `add-to-cart`).
@@ -397,25 +331,11 @@ Now, the JSON response is far more powerful and descriptive:
 
 ***
 
-HATEOAS is a deep topic, but understanding its philosophy is a major step toward thinking like a system architect. It prioritizes evolvability and resilience over short-term convenience.
-
-When you're ready to put all this knowledge to the test with interview preparation, say "continue."
-
----
-
-# continue
-
-Excellent. You've built a strong foundation and explored an advanced design principle. Now it's time to consolidate that knowledge and prepare you for the ultimate test: the technical interview.
-
-In this final module, we will focus on applying everything we've learned to the kinds of questions and problems you will face when interviewing for a Principal Engineer role.
-
-***
-
-### **Module 5: Expert - Interview Mastery**
+## **Module 5: Expert - Interview Mastery**
 
 This module is your playbook for success. We'll cover conceptual questions to test your depth, coding challenges to test your practical skills, and system design scenarios to test your architectural thinking.
 
-#### **Common Interview Questions (Theory)**
+### **Common Interview Questions (Theory)**
 
 Here are the top conceptual questions related to our curriculum. Your goal is to answer them concisely and accurately, demonstrating deep understanding.
 
@@ -443,9 +363,9 @@ Here are the top conceptual questions related to our curriculum. Your goal is to
 10. **What is the key difference between the information available in `postHandle` versus `afterCompletion`?**
     * **Answer:** In `postHandle`, you have access to the `ModelAndView` object, allowing you to manipulate the model before the view is rendered. In `afterCompletion`, the view is already rendered, but you gain access to an `Exception` object if one was thrown during processing, making it ideal for centralized exception logging.
 
-#### **Common Interview Questions (Practical/Coding)**
+### **Common Interview Questions (Practical/Coding)**
 
-##### **1. Coding Task: Implement a Tenant-ID Verification Interceptor**
+#### **1. Coding Task: Implement a Tenant-ID Verification Interceptor**
 
 **Problem:** In a multi-tenant application, every API request to `/api/**` must contain a `X-Tenant-ID` header. Create an interceptor that validates the presence of this header. If it's missing or empty, reject the request with a `400 Bad Request` status and a clear error message.
 
@@ -491,7 +411,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 **Thought Process:** The `preHandle` method is the correct place for this validation. Returning `false` is the key to stopping unauthorized requests early. Setting the response status and writing a message provides clear feedback to the client. Attaching the ID as a request attribute is a clean way to pass data from the interceptor to the controller without altering method signatures.
 
-##### **2. Coding Task: Add HATEOAS Links to a Collection Resource**
+#### **2. Coding Task: Add HATEOAS Links to a Collection Resource**
 
 **Problem:** You have a controller that returns a list of `Employee` objects. Modify it so that the response includes a `self` link for the entire collection, and each individual `Employee` object in the list also has its own `self` link.
 
@@ -543,9 +463,9 @@ public class EmployeeHateoasController {
 
 **Thought Process:** The key is using `CollectionModel` for lists of resources and `EntityModel` for single resources. The `stream().map()` pattern is an elegant way to transform each data object into its hypermedia-aware representation. Building links with `linkTo(methodOn(...))` provides type-safe, refactor-friendly URL generation.
 
-#### **System Design Scenarios**
+## **System Design Scenarios**
 
-##### **1. System Design: A Pluggable Auditing System for Microservices**
+### **1. System Design: A Pluggable Auditing System for Microservices**
 
 **Problem:** Design a system that can be easily added to any microservice to automatically log all write operations (POST, PUT, DELETE). The audit log must capture who performed the action, what resource was affected, and the timestamp.
 
@@ -569,7 +489,7 @@ public class EmployeeHateoasController {
 * **Payload Logging:** We are not logging the request/response body to avoid storing sensitive data (PII) and to keep log sizes manageable. If payload logging were required, it would need a robust data scrubbing/anonymization layer.
 
 
-##### **2. System Design: A Tiered, Rate-Limited Public API**
+### **2. System Design: A Tiered, Rate-Limited Public API**
 
 **Problem:** Design the gateway for a public API that provides financial data. The API has three tiers: Free (API key, 10 req/min), Pro (API key, 100 req/min), and Enterprise (mTLS, unlimited). The gateway must enforce these rules.
 
