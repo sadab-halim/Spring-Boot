@@ -23,7 +23,7 @@ When you return a `ResponseEntity` from a Spring controller method, Spring's mes
 
 ### `ResponseEntity` vs. Returning Objects/Strings Directly
 You might wonder why you can't just return a plain Java object (POJO) or a `String` directly from your controller methods. While Spring Boot with `@RestController` will automatically serialize POJOs to JSON (or XML) and set a `200 OK` status, this approach lacks flexibility:
- - Limited Control over Status Cod
+ - Limited Control over Status Code
  - No Header Control
  - Ambiguity for Empty Responses
 
